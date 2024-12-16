@@ -34,13 +34,13 @@ class AccountForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Account.', [
+        $this->messenger()->addStatus($this->t('Created the %label Account.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Account.', [
+        $this->messenger()->addStatus($this->t('Saved the %label Account.', [
           '%label' => $entity->label(),
         ]));
     }

@@ -109,7 +109,7 @@ class ManualAddAccountLedgerForm extends FormBase {
     $values = $form_state->getValues();
     $account = Account::load($values['account']);
     $finance_manager->createLedger($account, $values['amount_type'], new Price($values['amount']['number'], $values['amount']['currency_code']), $values['remarks']);
-    \Drupal::messenger()->addMessage('已成功调整了账户余额！');
+    $this->messenger()->addStatus('已成功调整了账户余额！');
     $form_state->setRedirect('entity.account.canonical', ['account' => $account->id()]);
   }
 

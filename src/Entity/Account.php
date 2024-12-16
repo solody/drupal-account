@@ -219,6 +219,15 @@ class Account extends ContentEntityBase implements AccountInterface {
         'label' => 'inline',
         'type' => 'entity_reference_label',
         'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 0,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ],
       ]);
 
     // 账户名称.
@@ -236,16 +245,17 @@ class Account extends ContentEntityBase implements AccountInterface {
       ]);
 
     // 账户货币类型.
-    $fields['currency_code'] = BaseFieldDefinition::create('string')
+    $fields['currency_code'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Account currency code'))
       ->setDefaultValue('USD')
+      ->setSetting('allowed_values_function', 'Drupal\account\Entity\Account::getAllowedCurrencyCodes')
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'string',
+        'type' => 'list_default',
         'weight' => 0,
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
+        'type' => 'options_select',
         'weight' => 0,
       ]);
 
@@ -253,19 +263,25 @@ class Account extends ContentEntityBase implements AccountInterface {
     $fields['total_debit'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Total debit'))
       ->setDisplayOptions('view', [
-        'label' => 'inline',
+        'label' => 'above',
         'type' => 'commerce_price_default',
         'weight' => 0,
       ])
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayConfigurable('view', TRUE);
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_list_price',
+        'weight' => 0,
+      ]);
 
     // 账户出项累计（贷记）.
     $fields['total_credit'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Total credit'))
       ->setDisplayOptions('view', [
-        'label' => 'inline',
+        'label' => 'above',
         'type' => 'commerce_price_default',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_list_price',
         'weight' => 0,
       ]);
 
@@ -273,16 +289,12 @@ class Account extends ContentEntityBase implements AccountInterface {
     $fields['balance'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Balance'))
       ->setDisplayOptions('view', [
-        'label' => 'inline',
+        'label' => 'above',
         'type' => 'commerce_price_default',
         'weight' => 0,
-      ]);
-
-    $fields['created'] = BaseFieldDefinition::create('created')
-      ->setLabel(t('Created'))
-      ->setDisplayOptions('view', [
-        'label' => 'inline',
-        'type' => 'timestamp',
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_list_price',
         'weight' => 0,
       ]);
 
@@ -295,6 +307,18 @@ class Account extends ContentEntityBase implements AccountInterface {
       ]);
 
     return $fields;
+  }
+
+  /**
+   * Get allowed currency codes.
+   *
+   * @todo Read from commerce.
+   */
+  public static function getAllowedCurrencyCodes(): array {
+    return [
+      'USD' => 'USD',
+      'CNY' => 'CNY',
+    ];
   }
 
 }

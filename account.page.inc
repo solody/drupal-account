@@ -36,7 +36,7 @@ function template_preprocess_account(array &$variables)
   $user = $account->getOwner();
   /** @var \Drupal\account\Entity\AccountType $account_type */
   $account_type = $account->get('type')->entity;
-  $variables['title'] = $user->getAccountName() . ' 的 ' . $account_type->getLabel();
+  $variables['title'] = $user->getAccountName() . ' 的 ' . $account_type->label();
 
   // 账户明细按钮
   $variables['links'][] = [

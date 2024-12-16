@@ -33,6 +33,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   config_export = {
  *     "id",
  *     "label",
+ *     "withdraw_period",
+ *     "minimum_withdraw",
+ *     "maximum_withdraw",
  *   },
  *   links = {
  *     "canonical" = "/admin/finance/account_type/{account_type}",
@@ -64,48 +67,41 @@ class AccountType extends ConfigEntityBundleBase implements AccountTypeInterface
    *
    * @var int
    */
-  protected int $withdraw_period;
+  protected int $withdraw_period = 0;
 
   /**
    * 最小单笔提现限额.
    *
    * @var float
    */
-  protected float $minimum_withdraw;
+  protected float $minimum_withdraw = 0.0;
 
   /**
    * 最大单笔提现限额.
    *
    * @var float
    */
-  protected float $maximum_withdraw;
+  protected float $maximum_withdraw = 0.0;
 
   /**
    * {@inheritdoc}
    */
-  public function getLabel(): string {
-    return $this->label;
+  public function getWithdrawPeriod(): int {
+    return $this->withdraw_period;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getWithdrawPeriod(): ?int {
-    return $this->withdraw_period ?? NULL;
+  public function getMinimumWithdraw(): float {
+    return $this->minimum_withdraw;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getMinimumWithdraw(): ?float {
-    return $this->minimum_withdraw ?? NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMaximumWithdraw(): ?float {
-    return $this->maximum_withdraw ?? NULL;
+  public function getMaximumWithdraw(): float {
+    return $this->maximum_withdraw;
   }
 
 }

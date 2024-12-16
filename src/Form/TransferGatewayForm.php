@@ -111,13 +111,13 @@ class TransferGatewayForm extends EntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Transfer gateway.', [
+        $this->messenger()->addStatus($this->t('Created the %label Transfer gateway.', [
           '%label' => $transfer_gateway->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Transfer gateway.', [
+        $this->messenger()->addStatus($this->t('Saved the %label Transfer gateway.', [
           '%label' => $transfer_gateway->label(),
         ]));
     }

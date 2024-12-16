@@ -140,14 +140,33 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
         'label' => 'inline',
         'type' => 'entity_reference_label',
         'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => 0,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ],
       ]);
 
     // 记账类型（进/出）.
-    $fields['amount_type'] = BaseFieldDefinition::create('string')
+    $fields['amount_type'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Amount type'))
+      ->setSettings([
+        'allowed_values' => [
+          LedgerInterface::AMOUNT_TYPE_CREDIT => t('Credit'),
+          LedgerInterface::AMOUNT_TYPE_DEBIT => t('Debit'),
+        ],
+      ])
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'string',
+        'type' => 'list_default',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
         'weight' => 0,
       ]);
 
@@ -158,6 +177,10 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
         'label' => 'inline',
         'type' => 'commerce_price_default',
         'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_list_price',
+        'weight' => 0,
       ]);
 
     // 记账余额.
@@ -166,6 +189,10 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
       ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'commerce_price_default',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_list_price',
         'weight' => 0,
       ]);
 
@@ -176,6 +203,11 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
       ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'label' => 'above',
+        'type' => 'string_textarea',
         'weight' => 0,
       ]);
 

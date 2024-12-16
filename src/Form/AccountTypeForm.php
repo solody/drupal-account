@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class AccountTypeForm.
+ * Default form for edit AccountType entity.
  */
 class AccountTypeForm extends EntityForm {
 

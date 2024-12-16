@@ -34,13 +34,13 @@ class LedgerForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Ledger.', [
+        $this->messenger()->addStatus($this->t('Created the %label Ledger.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Ledger.', [
+        $this->messenger()->addStatus($this->t('Saved the %label Ledger.', [
           '%label' => $entity->label(),
         ]));
     }
