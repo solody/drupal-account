@@ -2,6 +2,7 @@
 
 namespace Drupal\account\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
@@ -64,14 +65,14 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   /**
    * {@inheritdoc}
    */
-  public function getName() {
+  public function getName(): string {
     return $this->get('name')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setName($name) {
+  public function setName(string $name): WithdrawInterface {
     $this->set('name', $name);
     return $this;
   }
@@ -79,14 +80,14 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   /**
    * {@inheritdoc}
    */
-  public function getTransactionNumber() {
+  public function getTransactionNumber(): string {
     return $this->get('transaction_number')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setTransactionNumber($transaction_number) {
+  public function setTransactionNumber(string $transaction_number): WithdrawInterface {
     $this->set('transaction_number', $transaction_number);
     return $this;
   }
@@ -94,39 +95,39 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCreatedTime() {
+  public function getCreatedTime(): int {
     return $this->get('created')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setCreatedTime($timestamp) {
+  public function setCreatedTime(int $timestamp): WithdrawInterface {
     $this->set('created', $timestamp);
     return $this;
   }
 
   /**
-   * @return \Drupal\commerce_price\Price
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * {@inheritdoc}
    */
-  public function getAmount() {
+  public function getAmount(): \Drupal\commerce_price\Price {
     if (!$this->get('amount')->isEmpty()) {
       return $this->get('amount')->first()->toPrice();
     }
+    return new Price(0, $this->getAccount()->getCurrencyCode());
   }
 
   /**
-   * @return Account
+   * {@inheritdoc}
    */
-  public function getAccount() {
+  public function getAccount(): AccountInterface {
     return $this->get('account_id')->entity;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setTransferMethod(TransferMethodInterface $transfer_method) {
+  public function setTransferMethod(TransferMethodInterface $transfer_method): WithdrawInterface {
     $this->set('transfer_method', $transfer_method);
     return $this;
   }
@@ -134,7 +135,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   /**
    * {@inheritdoc}
    */
-  public function getTransferMethod() {
+  public function getTransferMethod(): TransferMethodInterface {
     return $this->get('transfer_method')->entity;
   }
 
@@ -143,6 +144,15 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
+
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Name'))
+      ->setDescription(t('The name of the Withdraw entity.'))
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+      ]);
 
     // 提现账户.
     $fields['account_id'] = BaseFieldDefinition::create('entity_reference')
@@ -174,10 +184,9 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
         'weight' => 0,
       ]);
 
-    // 处理状态（待审核、正在处理、已拒绝、已完成）(使用状态机)
+    // 处理状态, See account.workflows.yml.
     $fields['state'] = BaseFieldDefinition::create('state')
       ->setLabel(t('Process status'))
-      ->setDescription(t('draft/processing/completed/canceled'))
       ->setRequired(TRUE)
       ->setSetting('max_length', 255)
       ->setDisplayOptions('view', [
@@ -239,15 +248,6 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
       ->setDisplayOptions('form', [
         'type' => 'string_textarea',
         'weight' => 0,
-      ]);
-
-    $fields['name'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Name'))
-      ->setDescription(t('The name of the Withdraw entity.'))
-      ->setDefaultValue('')
-      ->setDisplayOptions('view', [
-        'label' => 'inline',
-        'type' => 'string',
       ]);
 
     $fields['notice'] = BaseFieldDefinition::create('boolean')

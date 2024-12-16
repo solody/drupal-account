@@ -5,22 +5,44 @@ withdraw_default:
   states:
     draft:
       label: 'Draft'
+    approved:
+      label: 'Approved'
+    rejected:
+      label: 'Rejected'
     processing:
       label: 'Processing'
+    failed:
+      label: 'Failed'
     completed:
       label: 'Completed'
     canceled:
       label: 'Canceled'
   transitions:
-    place:
-      label: 'Place'
+    approve:
+      label: 'Approve'
       from: [draft]
-      to: processing
+      to: approved
+    reject:
+      label: 'Reject'
+      from: [draft]
+      to: rejected
     transfer:
       label: 'Transfer'
+      from: [approved]
+      to: processing
+    fails:
+      label: 'Fails'
+      from: [processing]
+      to: failed
+    retry:
+      label: 'Retry'
+      from: [failed]
+      to: processing
+    complete:
+      label: 'Complete'
       from: [processing]
       to: completed
     cancel:
       label: 'Cancel'
-      from: [draft]
-      to:   canceled
+      from: [draft, failed]
+      to: canceled

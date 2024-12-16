@@ -2,6 +2,7 @@
 
 namespace Drupal\account\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 
@@ -12,26 +13,24 @@ use Drupal\Core\Entity\EntityChangedInterface;
  */
 interface WithdrawInterface extends ContentEntityInterface, EntityChangedInterface {
 
-  // Add get/set methods for your configuration properties here.
-
   /**
    * Gets the Withdraw name.
    *
    * @return string
    *   Name of the Withdraw.
    */
-  public function getName();
+  public function getName(): string;
 
   /**
    * Sets the Withdraw name.
    *
    * @param string $name
-   *   The Withdraw name.
+   *   The label.
    *
    * @return \Drupal\account\Entity\WithdrawInterface
    *   The called Withdraw entity.
    */
-  public function setName($name);
+  public function setName(string $name): WithdrawInterface;
 
   /**
    * Gets the Withdraw transaction_number.
@@ -39,18 +38,18 @@ interface WithdrawInterface extends ContentEntityInterface, EntityChangedInterfa
    * @return string
    *   TransactionNumber of the Withdraw.
    */
-  public function getTransactionNumber();
+  public function getTransactionNumber(): string;
 
   /**
    * Sets the Withdraw transaction_number.
    *
    * @param string $transaction_number
-   *   The Withdraw transaction_number.
+   *   The Withdrawal transaction_number.
    *
    * @return \Drupal\account\Entity\WithdrawInterface
-   *   The called Withdraw entity.
+   *   The called Withdrawal entity.
    */
-  public function setTransactionNumber($transaction_number);
+  public function setTransactionNumber(string $transaction_number): WithdrawInterface;
 
   /**
    * Gets the Withdraw creation timestamp.
@@ -58,39 +57,37 @@ interface WithdrawInterface extends ContentEntityInterface, EntityChangedInterfa
    * @return int
    *   Creation timestamp of the Withdraw.
    */
-  public function getCreatedTime();
+  public function getCreatedTime(): int;
 
   /**
    * Sets the Withdraw creation timestamp.
    *
    * @param int $timestamp
-   *   The Withdraw creation timestamp.
+   *   The Withdrawal creation timestamp.
    *
    * @return \Drupal\account\Entity\WithdrawInterface
-   *   The called Withdraw entity.
+   *   The called Withdrawal entity.
    */
-  public function setCreatedTime($timestamp);
+  public function setCreatedTime(int $timestamp): WithdrawInterface;
 
   /**
-   * @return \Drupal\commerce_price\Price
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * The amount.
    */
-  public function getAmount();
+  public function getAmount(): Price;
 
   /**
-   * @return Account
+   * The account.
    */
-  public function getAccount();
+  public function getAccount(): AccountInterface;
 
   /**
-   * @param TransferMethodInterface $transfer_method
-   * @return $this
+   * Sets the transfer method.
    */
-  public function setTransferMethod(TransferMethodInterface $transfer_method);
+  public function setTransferMethod(TransferMethodInterface $transfer_method): WithdrawInterface;
 
   /**
-   * @return TransferMethodInterface
+   * The transfer method entity.
    */
-  public function getTransferMethod();
+  public function getTransferMethod(): TransferMethodInterface;
 
 }
