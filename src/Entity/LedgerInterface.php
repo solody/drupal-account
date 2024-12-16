@@ -2,6 +2,7 @@
 
 namespace Drupal\account\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
 
@@ -12,7 +13,45 @@ use Drupal\Core\Entity\EntityChangedInterface;
  */
 interface LedgerInterface extends ContentEntityInterface, EntityChangedInterface {
 
-  // Add get/set methods for your configuration properties here.
+  /**
+   * 借记，进项.
+   */
+  const string AMOUNT_TYPE_DEBIT = 'debit';
+
+  /**
+   * 贷记，出项.
+   */
+  const string AMOUNT_TYPE_CREDIT = 'credit';
+
+  /**
+   * The account.
+   */
+  public function getAccount(): Account;
+
+  /**
+   * The account id.
+   */
+  public function getAccountId(): int;
+
+  /**
+   * The amount type.
+   */
+  public function getAmountType(): string;
+
+  /**
+   * The amount.
+   */
+  public function getAmount(): Price;
+
+  /**
+   * The balance.
+   */
+  public function getBalance(): Price;
+
+  /**
+   * The account type.
+   */
+  public function getAccountType(): string;
 
   /**
    * Gets the Ledger creation timestamp.
@@ -20,7 +59,7 @@ interface LedgerInterface extends ContentEntityInterface, EntityChangedInterface
    * @return int
    *   Creation timestamp of the Ledger.
    */
-  public function getCreatedTime();
+  public function getCreatedTime(): int;
 
   /**
    * Sets the Ledger creation timestamp.
@@ -31,36 +70,6 @@ interface LedgerInterface extends ContentEntityInterface, EntityChangedInterface
    * @return \Drupal\account\Entity\LedgerInterface
    *   The called Ledger entity.
    */
-  public function setCreatedTime($timestamp);
-
-  /**
-   * @return \Drupal\commerce_price\Price
-   */
-  public function getBalance();
-
-  /**
-   * @return string
-   */
-  public function getAmountType();
-
-  /**
-   * @return \Drupal\commerce_price\Price
-   */
-  public function getAmount();
-
-  /**
-   * @return Account
-   */
-  public function getAccount();
-
-  /**
-   * @return int
-   */
-  public function getAccountId();
-
-  /**
-   * @return string
-   */
-  public function getAccountType();
+  public function setCreatedTime(int $timestamp): LedgerInterface;
 
 }

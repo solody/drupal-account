@@ -2,6 +2,7 @@
 
 namespace Drupal\account\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
@@ -51,10 +52,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * )
  */
 class Ledger extends ContentEntityBase implements LedgerInterface {
-  // 借记，进项.
-  const AMOUNT_TYPE_DEBIT = 'debit';
-  // 贷记，出项.
-  const AMOUNT_TYPE_CREDIT = 'credit';
+
 
   use EntityChangedTrait;
 
@@ -68,62 +66,64 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCreatedTime() {
-    return $this->get('created')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCreatedTime($timestamp) {
-    $this->set('created', $timestamp);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getBalance() {
-    if (!$this->get('balance')->isEmpty()) {
-      return $this->get('balance')->first()->toPrice();
-    }
-  }
-
-  /**
-   * @return string
-   */
-  public function getAmountType() {
-    return $this->get('amount_type')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAmount() {
-    if (!$this->get('amount')->isEmpty()) {
-      return $this->get('amount')->first()->toPrice();
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAccount() {
+  public function getAccount(): Account {
     return $this->get('account_id')->entity;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAccountId() {
+  public function getAccountId(): int {
     return $this->get('account_id')->target_id;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getAccountType() {
+  public function getAccountType(): string {
     return $this->getAccount()->bundle();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAmountType(): string {
+    return $this->get('amount_type')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAmount(): Price {
+    if (!$this->get('amount')->isEmpty()) {
+      return $this->get('amount')->first()->toPrice();
+    }
+    return new Price(0, $this->getAccount()->getCurrencyCode());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBalance(): Price {
+    if (!$this->get('balance')->isEmpty()) {
+      return $this->get('balance')->first()->toPrice();
+    }
+    return new Price(0, $this->getAccount()->getCurrencyCode());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCreatedTime(): int {
+    return $this->get('created')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCreatedTime(int $timestamp): LedgerInterface {
+    $this->set('created', $timestamp);
+    return $this;
   }
 
   /**
@@ -185,6 +185,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
         'type' => 'dynamic_entity_reference_label',
       ]);
 
+    // Whether to send message to the owner about this record or not.
     $fields['notice'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Need notice the owner.'))
       ->setDefaultValue(TRUE);
