@@ -25,7 +25,7 @@ class ManualAddAccountLedgerForm extends FormBase {
    * Constructs a new ManualAddAccountLedgerForm object.
    */
   public function __construct(
-    FinanceManagerInterface $account_finance_manager
+    FinanceManagerInterface $account_finance_manager,
   ) {
     $this->accountFinanceManager = $account_finance_manager;
   }
@@ -64,8 +64,10 @@ class ManualAddAccountLedgerForm extends FormBase {
       '#weight' => '0',
     ];
     $account_id = \Drupal::routeMatch()->getParameter('account_id');
-    $account = null;
-    if ($account_id) $account = Account::load($account_id);
+    $account = NULL;
+    if ($account_id) {
+      $account = Account::load($account_id);
+    }
     $form['account'] = [
       '#type' => 'entity_autocomplete',
       '#title' => $this->t('Finance Account'),
@@ -102,7 +104,7 @@ class ManualAddAccountLedgerForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    /** @var FinanceManagerInterface $finance_manager */
+    /** @var \Drupal\account\FinanceManagerInterface $finance_manager */
     $finance_manager = \Drupal::service('account.finance_manager');
     $values = $form_state->getValues();
     $account = Account::load($values['account']);

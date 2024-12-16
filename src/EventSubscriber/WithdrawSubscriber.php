@@ -5,14 +5,12 @@ namespace Drupal\account\EventSubscriber;
 use Drupal\account\Entity\Ledger;
 use Drupal\account\Entity\TransferGatewayInterface;
 use Drupal\account\Entity\TransferMethodInterface;
-use Drupal\account\Entity\Withdraw;
 use Drupal\state_machine\Event\WorkflowTransitionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\Event;
 use Drupal\account\FinanceManagerInterface;
 
 /**
- * Class WithdrawSubscriber.
+ * Actions for the withdraw entity state machine change.
  */
 class WithdrawSubscriber implements EventSubscriberInterface {
 
@@ -21,7 +19,7 @@ class WithdrawSubscriber implements EventSubscriberInterface {
    *
    * @var \Drupal\account\FinanceManagerInterface
    */
-  protected $accountFinanceManager;
+  protected FinanceManagerInterface $accountFinanceManager;
 
   /**
    * Constructs a new WithdrawSubscriber object.
@@ -33,25 +31,27 @@ class WithdrawSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  static function getSubscribedEvents() {
-    $events['withdraw.transfer.pre_transition'] = ['withdraw_transfer_pre_transition'];
-    $events['withdraw.transfer.post_transition'] = ['withdraw_transfer_post_transition'];
-    $events['withdraw.cancel.post_transition'] = ['withdraw_cancel_post_transition'];
+  public static function getSubscribedEvents() {
+    $events['withdraw.transfer.pre_transition'] = ['withdrawTransferPreTransition'];
+    $events['withdraw.transfer.post_transition'] = ['withdrawTransferPostTransition'];
+    $events['withdraw.cancel.post_transition'] = ['withdrawCancelPostTransition'];
 
     return $events;
   }
 
   /**
-   * This method is called whenever the withdraw.transfer.pre_transition event is
-   * dispatched.
+   * Action to transfer.
+   *
+   * This method is called whenever the withdraw.transfer.pre_transition
+   * event is dispatched.
    *
    * 状态切换之前，执行转账插件
    *
-   * @param WorkflowTransitionEvent $event
-   * @throws \Exception
+   * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
+   *   The event.
    */
-  public function withdraw_transfer_pre_transition(WorkflowTransitionEvent $event) {
-    /** @var Withdraw $withdraw */
+  public function withdrawTransferPreTransition(WorkflowTransitionEvent $event) {
+    /** @var \Drupal\account\Entity\Withdraw $withdraw */
     $withdraw = $event->getEntity();
 
     $transfer_method = $withdraw->getTransferMethod();
@@ -59,14 +59,15 @@ class WithdrawSubscriber implements EventSubscriberInterface {
       $gateway = $transfer_method->getTransferGateway();
       if ($gateway instanceof TransferGatewayInterface) {
         $plugin = $gateway->getPlugin();
-        if ($plugin instanceof \Drupal\account\Plugin\TransferGatewayInterface) {
+        if ($plugin instanceof TransferGatewayInterface) {
           try {
             $plugin->transfer($withdraw);
-            \Drupal::messenger()->addMessage('提现单['.$withdraw->id().']状态已切换为[已完成]，'.$plugin->getPluginId().'转帐打款请求成功：');
-          } catch (\Exception $exception) {
-            \Drupal::messenger()->addError('提现单['.$withdraw->id().']打款失败：' . $plugin->getPluginId().':'.$exception->getMessage());
-            // 跳转以终止状态转换
-            header('Location: '.$_SERVER['REQUEST_URI']);
+            \Drupal::messenger()->addMessage('提现单[' . $withdraw->id() . ']状态已切换为[已完成]，' . $plugin->getPluginId() . '转帐打款请求成功：');
+          }
+          catch (\Exception $exception) {
+            \Drupal::messenger()->addError('提现单[' . $withdraw->id() . ']打款失败：' . $plugin->getPluginId() . ':' . $exception->getMessage());
+            // 跳转以终止状态转换.
+            header('Location: ' . $_SERVER['REQUEST_URI']);
             exit();
           }
         }
@@ -75,30 +76,34 @@ class WithdrawSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * This method is called whenever the withdraw.transfer.post_transition event is
-   * dispatched.
+   * Action after transfer.
    *
-   * TODO:: 提现手续费
+   * This method is called whenever the withdraw.transfer.post_transition
+   * event is dispatched.
    *
-   * @param WorkflowTransitionEvent $event
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * @todo 扣取提现手续费
+   *
+   * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
+   *   The event.
    */
-  public function withdraw_transfer_post_transition(WorkflowTransitionEvent $event) {
-    /** @var Withdraw $withdraw */
+  public function withdrawTransferPostTransition(WorkflowTransitionEvent $event) {
+    /** @var \Drupal\account\Entity\Withdraw $withdraw */
     $withdraw = $event->getEntity();
   }
 
   /**
-   * This method is called whenever the withdraw.cancel.post_transition event is
-   * dispatched.
+   * Action after canceled the withdraw.
+   *
+   * This method is called whenever the withdraw.cancel.post_transition
+   * event is dispatched.
    *
    * 退款到账户余额
    *
-   * @param WorkflowTransitionEvent $event
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
+   *   The event.
    */
-  public function withdraw_cancel_post_transition(WorkflowTransitionEvent $event) {
-    /** @var Withdraw $withdraw */
+  public function withdrawCancelPostTransition(WorkflowTransitionEvent $event) {
+    /** @var \Drupal\account\Entity\Withdraw $withdraw */
     $withdraw = $event->getEntity();
 
     $this->accountFinanceManager->createLedger(
@@ -109,4 +114,5 @@ class WithdrawSubscriber implements EventSubscriberInterface {
       $withdraw
     );
   }
+
 }

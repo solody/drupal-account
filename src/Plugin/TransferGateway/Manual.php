@@ -14,8 +14,9 @@ use Drupal\entity\BundleFieldDefinition;
  * )
  */
 class Manual extends TransferGatewayBase {
+
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function buildFieldDefinitions() {
 
@@ -49,11 +50,13 @@ class Manual extends TransferGatewayBase {
 
   /**
    * 转账
-   * @param WithdrawInterface $withdraw
+   *
+   * @param \Drupal\account\Entity\WithdrawInterface $withdraw
+   *
    * @return bool
    */
   public function transfer(WithdrawInterface $withdraw) {
-    return true;
+    return TRUE;
   }
 
 }
