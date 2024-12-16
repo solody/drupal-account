@@ -46,61 +46,61 @@ class AccountType extends ConfigEntityBundleBase implements AccountTypeInterface
    *
    * @var string
    */
-  protected $id;
+  protected string $id;
 
   /**
    * The Account type label.
    *
    * @var string
    */
-  protected $label;
+  protected string $label;
 
   /**
-   * 提现周期（天）
+   * 提现周期（天）.
    *
    * @var int
    */
-  protected $withdraw_period;
+  protected int $withdraw_period;
 
   /**
-   * 最小单笔提现限额
+   * 最小单笔提现限额.
    *
    * @var float
    */
-  protected $minimum_withdraw;
+  protected float $minimum_withdraw;
 
   /**
-   * 最大单笔提现限额
+   * 最大单笔提现限额.
    *
    * @var float
    */
-  protected $maximum_withdraw;
+  protected float $maximum_withdraw;
 
   /**
-   *
+   * {@inheritdoc}
    */
-  public function getLabel() {
+  public function getLabel(): string {
     return $this->label;
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
-  public function getWithdrawPeriod() {
+  public function getWithdrawPeriod(): int {
     return $this->withdraw_period;
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
-  public function getMinimumWithdraw() {
+  public function getMinimumWithdraw(): float {
     return $this->minimum_withdraw;
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
-  public function getMaximumWithdraw() {
+  public function getMaximumWithdraw(): float {
     return $this->maximum_withdraw;
   }
 

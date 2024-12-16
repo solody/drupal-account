@@ -9,26 +9,24 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface AccountTypeInterface extends ConfigEntityInterface {
 
-  // Add get/set methods for your configuration properties here.
+  /**
+   * Get the label of the account type.
+   */
+  public function getLabel(): string;
 
   /**
-   * @return string
+   * Get the withdrawal period.
    */
-  public function getLabel();
+  public function getWithdrawPeriod(): int;
 
   /**
-   *
+   * Get the minimum limitation of withdrawal.
    */
-  public function getWithdrawPeriod();
+  public function getMinimumWithdraw(): float;
 
   /**
-   *
+   * Get the maximum limitation of withdrawal.
    */
-  public function getMinimumWithdraw();
-
-  /**
-   *
-   */
-  public function getMaximumWithdraw();
+  public function getMaximumWithdraw(): float;
 
 }
