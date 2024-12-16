@@ -13,15 +13,13 @@ use Drupal\user\EntityOwnerInterface;
  */
 interface TransferMethodInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-  // Add get/set methods for your configuration properties here.
-
   /**
    * Gets the Transfer method name.
    *
    * @return string
    *   Name of the Transfer method.
    */
-  public function getName();
+  public function getName(): string;
 
   /**
    * Sets the Transfer method name.
@@ -32,7 +30,7 @@ interface TransferMethodInterface extends ContentEntityInterface, EntityChangedI
    * @return \Drupal\account\Entity\TransferMethodInterface
    *   The called Transfer method entity.
    */
-  public function setName($name);
+  public function setName(string $name): TransferMethodInterface;
 
   /**
    * Gets the Transfer method creation timestamp.
@@ -40,7 +38,7 @@ interface TransferMethodInterface extends ContentEntityInterface, EntityChangedI
    * @return int
    *   Creation timestamp of the Transfer method.
    */
-  public function getCreatedTime();
+  public function getCreatedTime(): int;
 
   /**
    * Sets the Transfer method creation timestamp.
@@ -51,28 +49,29 @@ interface TransferMethodInterface extends ContentEntityInterface, EntityChangedI
    * @return \Drupal\account\Entity\TransferMethodInterface
    *   The called Transfer method entity.
    */
-  public function setCreatedTime($timestamp);
+  public function setCreatedTime(int $timestamp): TransferMethodInterface;
 
   /**
-   * @param TransferGatewayInterface $transfer_gateway
-   * @return $this
+   * Sets gateway for the Transfer method.
    */
-  public function setTransferGateway(TransferGatewayInterface $transfer_gateway);
+  public function setTransferGateway(TransferGatewayInterface $transfer_gateway): TransferMethodInterface;
 
   /**
-   * @return TransferGatewayInterface
+   * The gateway.
    */
-  public function getTransferGateway();
+  public function getTransferGateway(): TransferGatewayInterface;
 
   /**
-   * @return bool
+   * Indicated if it is default transfer method to use.
    */
-  public function isDefault();
+  public function isDefault(): bool;
 
   /**
+   * Set whether it is default or not.
+   *
    * @param bool $value
-   * @return $this
+   *   Whether it is default or not.
    */
-  public function setDefault($value);
+  public function setDefault(bool $value): TransferMethodInterface;
 
 }

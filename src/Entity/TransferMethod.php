@@ -39,7 +39,7 @@ use Drupal\user\UserInterface;
  *     "id" = "id",
  *     "label" = "name",
  *     "uuid" = "uuid",
- *     "uid" = "user_id",
+ *     "uid" = "uid",
  *     "langcode" = "langcode",
  *     "bundle" = "type",
  *   },
@@ -69,14 +69,14 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
   /**
    * {@inheritdoc}
    */
-  public function getName() {
+  public function getName(): string {
     return $this->get('name')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setName($name) {
+  public function setName(string $name): TransferMethodInterface {
     $this->set('name', $name);
     return $this;
   }
@@ -84,14 +84,14 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
   /**
    * {@inheritdoc}
    */
-  public function getCreatedTime() {
+  public function getCreatedTime(): int {
     return $this->get('created')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setCreatedTime($timestamp) {
+  public function setCreatedTime(int $timestamp): TransferMethodInterface {
     $this->set('created', $timestamp);
     return $this;
   }
@@ -100,21 +100,21 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
    * {@inheritdoc}
    */
   public function getOwner() {
-    return $this->get('user_id')->entity;
+    return $this->get('uid')->entity;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getOwnerId() {
-    return $this->get('user_id')->target_id;
+    return $this->get('uid')->target_id;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setOwnerId($uid) {
-    $this->set('user_id', $uid);
+    $this->set('uid', $uid);
     return $this;
   }
 
@@ -122,14 +122,14 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
    * {@inheritdoc}
    */
   public function setOwner(UserInterface $account) {
-    $this->set('user_id', $account->id());
+    $this->set('uid', $account->id());
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setTransferGateway(TransferGatewayInterface $transfer_gateway) {
+  public function setTransferGateway(TransferGatewayInterface $transfer_gateway): TransferMethodInterface {
     $this->set('transfer_gateway', $transfer_gateway);
     return $this;
   }
@@ -137,32 +137,36 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
   /**
    * {@inheritdoc}
    */
-  public function getTransferGateway() {
+  public function getTransferGateway(): TransferGatewayInterface {
     return $this->get('transfer_gateway')->entity;
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
-  public function isDefault() {
+  public function isDefault(): bool {
     return (boolean) $this->is_default->value;
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
-  public function setDefault($value) {
+  public function setDefault(bool $value): TransferMethodInterface {
     $this->set('is_default', (boolean) $value);
     return $this;
   }
 
   /**
    * {@inheritdoc}
+   *
+   * There are buildFieldDefinitions
+   * in bundle_plugin_type = "account_transfer_gateway".
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+
+    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Owner'))
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
