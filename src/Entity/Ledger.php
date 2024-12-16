@@ -7,7 +7,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\user\UserInterface;
 
 /**
  * Defines the Ledger entity.
@@ -52,8 +51,10 @@ use Drupal\user\UserInterface;
  * )
  */
 class Ledger extends ContentEntityBase implements LedgerInterface {
-  const AMOUNT_TYPE_DEBIT = 'debit';  // 借记，进项
-  const AMOUNT_TYPE_CREDIT = 'credit'; // 贷记，出项
+  // 借记，进项.
+  const AMOUNT_TYPE_DEBIT = 'debit';
+  // 贷记，出项.
+  const AMOUNT_TYPE_CREDIT = 'credit';
 
   use EntityChangedTrait;
 
@@ -80,7 +81,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function getBalance() {
     if (!$this->get('balance')->isEmpty()) {
@@ -96,7 +97,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
   }
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function getAmount() {
     if (!$this->get('amount')->isEmpty()) {
@@ -131,7 +132,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    // 所属账户
+    // 所属账户.
     $fields['account_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Account'))
       ->setSetting('target_type', 'account')
@@ -141,7 +142,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
         'weight' => 0,
       ]);
 
-    // 记账类型（进/出）
+    // 记账类型（进/出）.
     $fields['amount_type'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Amount type'))
       ->setDisplayOptions('view', [
@@ -150,7 +151,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
         'weight' => 0,
       ]);
 
-    // 记账金额
+    // 记账金额.
     $fields['amount'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Amount'))
       ->setDisplayOptions('view', [
@@ -159,7 +160,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
         'weight' => 0,
       ]);
 
-    // 记账余额
+    // 记账余额.
     $fields['balance'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Balance'))
       ->setDisplayOptions('view', [
@@ -168,7 +169,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
         'weight' => 0,
       ]);
 
-    // 备注
+    // 备注.
     $fields['remarks'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Remarks'))
       ->setDefaultValue('')
@@ -181,14 +182,14 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
     $fields['source'] = BaseFieldDefinition::create('dynamic_entity_reference')
       ->setLabel(t('Accounting source'))
       ->setDisplayOptions('view', [
-        'type' => 'dynamic_entity_reference_label'
+        'type' => 'dynamic_entity_reference_label',
       ]);
 
     $fields['notice'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Need notice the owner.'))
-      ->setDefaultValue(true);
+      ->setDefaultValue(TRUE);
 
-    // 发生时间
+    // 发生时间.
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDisplayOptions('view', [

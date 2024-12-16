@@ -12,80 +12,120 @@ use Drupal\user\EntityOwnerInterface;
  *
  * @ingroup account
  */
-interface AccountInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface
-{
+interface AccountInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
 
-    // Add get/set methods for your configuration properties here.
+  /**
+   * Gets the Account name.
+   *
+   * @return string
+   *   Name of the Account.
+   */
+  public function getName(): string;
 
-    /**
-     * Gets the Account name.
-     *
-     * @return string
-     *   Name of the Account.
-     */
-    public function getName();
+  /**
+   * Sets the Account name.
+   *
+   * @param string $name
+   *   The Account name.
+   *
+   * @return \Drupal\account\Entity\AccountInterface
+   *   The called Account entity.
+   */
+  public function setName(string $name): AccountInterface;
 
-    /**
-     * Sets the Account name.
-     *
-     * @param string $name
-     *   The Account name.
-     *
-     * @return \Drupal\account\Entity\AccountInterface
-     *   The called Account entity.
-     */
-    public function setName($name);
+  /**
+   * Gets the currency code of this account.
+   *
+   * @return string
+   *   Currency code of the Account.
+   */
+  public function getCurrencyCode(): string;
 
-    /**
-     * Gets the Account creation timestamp.
-     *
-     * @return int
-     *   Creation timestamp of the Account.
-     */
-    public function getCreatedTime();
+  /**
+   * Sets the currency code.
+   *
+   * @param string $currency_code
+   *   The currency code.
+   *
+   * @return \Drupal\account\Entity\AccountInterface
+   *   The called Account entity.
+   */
+  public function setCurrencyCode(string $currency_code): AccountInterface;
 
-    /**
-     * Sets the Account creation timestamp.
-     *
-     * @param int $timestamp
-     *   The Account creation timestamp.
-     *
-     * @return \Drupal\account\Entity\AccountInterface
-     *   The called Account entity.
-     */
-    public function setCreatedTime($timestamp);
+  /**
+   * Gets the Account creation timestamp.
+   *
+   * @return int
+   *   Creation timestamp of the Account.
+   */
+  public function getCreatedTime(): int;
 
-    /**
-     * @return Price
-     * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-     */
-    public function getBalance();
+  /**
+   * Sets the Account creation timestamp.
+   *
+   * @param int $timestamp
+   *   The Account creation timestamp.
+   *
+   * @return \Drupal\account\Entity\AccountInterface
+   *   The called Account entity.
+   */
+  public function setCreatedTime(int $timestamp): AccountInterface;
 
-    /**
-     * @param Price $amount
-     * @return $this
-     */
-    public function setBalance(Price $amount);
+  /**
+   * Get the balance of this account.
+   *
+   * @return \Drupal\commerce_price\Price
+   *   The balance amount.
+   */
+  public function getBalance(): Price;
 
-    /**
-     * @return Price
-     */
-    public function getTotalCredit();
+  /**
+   * Set the balance amount.
+   *
+   * @param \Drupal\commerce_price\Price $amount
+   *   The amount to set.
+   *
+   * @return \Drupal\account\Entity\AccountInterface
+   *   The called Account entity.
+   */
+  public function setBalance(Price $amount): AccountInterface;
 
-    /**
-     * @param Price $amount
-     * @return $this
-     */
-    public function setTotalCredit(Price $amount);
+  /**
+   * Get the total credit amount.
+   *
+   * @return \Drupal\commerce_price\Price
+   *   The amount.
+   */
+  public function getTotalCredit(): Price;
 
-    /**
-     * @return Price
-     */
-    public function getTotalDebit();
+  /**
+   * Set the total credit amount.
+   *
+   * @param \Drupal\commerce_price\Price $amount
+   *   The amount.
+   *
+   * @return \Drupal\account\Entity\AccountInterface
+   *   The called Account entity.
+   */
+  public function setTotalCredit(Price $amount): AccountInterface;
 
-    /**
-     * @param Price $amount
-     * @return $this
-     */
-    public function setTotalDebit(Price $amount);
+  /**
+   * Get the total debit amount.
+   *
+   * @return \Drupal\commerce_price\Price
+   *   The amount.
+   */
+  public function getTotalDebit(): Price;
+
+  /**
+   * Set the total debit amount.
+   *
+   * @param \Drupal\commerce_price\Price $amount
+   *   The amount.
+   *
+   * @return \Drupal\account\Entity\AccountInterface
+   *   The called Account entity.
+   */
+  public function setTotalDebit(Price $amount): AccountInterface;
+
 }

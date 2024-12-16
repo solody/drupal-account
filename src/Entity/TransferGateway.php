@@ -3,7 +3,6 @@
 namespace Drupal\account\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\account\Plugin\TransferGatewayManager;
 
 /**
  * Defines the Transfer gateway entity.
@@ -73,7 +72,7 @@ class TransferGateway extends ConfigEntityBase implements TransferGatewayInterfa
    * {@inheritdoc}
    */
   public function getPlugin() {
-    /** @var TransferGatewayManager $plugin_manager */
+    /** @var \Drupal\account\Plugin\TransferGatewayManager $plugin_manager */
     $plugin_manager = \Drupal::service('plugin.manager.account_transfer_gateway');
     return $plugin_manager->createInstance($this->plugin, $this->configuration);
   }
@@ -108,4 +107,5 @@ class TransferGateway extends ConfigEntityBase implements TransferGatewayInterfa
     $this->configuration = $configuration;
     return $this;
   }
+
 }

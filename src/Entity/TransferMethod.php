@@ -141,13 +141,18 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
     return $this->get('transfer_gateway')->entity;
   }
 
+  /**
+   *
+   */
   public function isDefault() {
-    return (boolean)$this->is_default->value;
+    return (boolean) $this->is_default->value;
   }
 
-  public function setDefault($value)
-  {
-    $this->set('is_default', (boolean)$value);
+  /**
+   *
+   */
+  public function setDefault($value) {
+    $this->set('is_default', (boolean) $value);
     return $this;
   }
 
@@ -163,7 +168,7 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
       ->setSetting('handler', 'default')
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'entity_reference_label'
+        'type' => 'entity_reference_label',
       ]);
 
     $fields['name'] = BaseFieldDefinition::create('string')
@@ -171,10 +176,10 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
       ->setDefaultValue('')
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'string'
+        'type' => 'string',
       ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textfield'
+        'type' => 'string_textfield',
       ]);
 
     $fields['transfer_gateway'] = BaseFieldDefinition::create('entity_reference')
@@ -184,12 +189,12 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
       ->setSetting('target_type', 'account_transfer_gateway')
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'entity_reference_label'
+        'type' => 'entity_reference_label',
       ]);
 
     $fields['is_default'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Default transfer method.'))
-      ->setDefaultValue(false);
+      ->setDefaultValue(FALSE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))

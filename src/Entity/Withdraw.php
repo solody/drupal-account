@@ -2,13 +2,11 @@
 
 namespace Drupal\account\Entity;
 
-use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\user\UserInterface;
 
 /**
  * Defines the Withdraw entity.
@@ -109,7 +107,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   }
 
   /**
-   * @return Price
+   * @return \Drupal\commerce_price\Price
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function getAmount() {
@@ -146,8 +144,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-
-    // 提现账户
+    // 提现账户.
     $fields['account_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Account'))
       ->setSetting('target_type', 'account')
@@ -157,7 +154,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
         'weight' => 0,
       ]);
 
-    // 提现金额
+    // 提现金额.
     $fields['amount'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Amount'))
       ->setDisplayOptions('view', [
@@ -166,7 +163,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
         'weight' => 0,
       ]);
 
-    // 转账方式
+    // 转账方式.
     $fields['transfer_method'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Transfer method'))
       ->setSetting('target_type', 'account_transfer_method')
@@ -190,8 +187,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
       ])
       ->setSetting('workflow', 'withdraw_default');
 
-
-    // 处理人（审核人）
+    // 处理人（审核人）.
     $fields['auditor_user_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Auditor'))
       ->setRevisionable(TRUE)
@@ -204,7 +200,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
         'weight' => 0,
       ]);
 
-    // 审核时间
+    // 审核时间.
     $fields['audit_time'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Audit time'))
       ->setDisplayOptions('view', [
@@ -213,7 +209,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
         'weight' => 0,
       ]);
 
-    // 转账交易号
+    // 转账交易号.
     $fields['transaction_number'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Transaction number'))
       ->setDescription(t('The three-part transfer service system transaction number.'))
@@ -227,7 +223,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
         'weight' => 0,
       ]);
 
-    // 备注
+    // 备注.
     $fields['remarks'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Remarks'))
       ->setSettings([
@@ -251,14 +247,14 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
       ->setDefaultValue('')
       ->setDisplayOptions('view', [
         'label' => 'inline',
-        'type' => 'string'
+        'type' => 'string',
       ]);
 
     $fields['notice'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Need notice the owner.'))
-      ->setDefaultValue(true);
+      ->setDefaultValue(TRUE);
 
-    // 申请时间
+    // 申请时间.
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDisplayOptions('view', [

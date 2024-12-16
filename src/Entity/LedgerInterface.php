@@ -2,11 +2,8 @@
 
 namespace Drupal\account\Entity;
 
-use Drupal\commerce_price\Plugin\Field\FieldType\PriceItem;
-use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides an interface for defining Ledger entities.
@@ -37,7 +34,7 @@ interface LedgerInterface extends ContentEntityInterface, EntityChangedInterface
   public function setCreatedTime($timestamp);
 
   /**
-   * @return Price
+   * @return \Drupal\commerce_price\Price
    */
   public function getBalance();
 
@@ -47,7 +44,7 @@ interface LedgerInterface extends ContentEntityInterface, EntityChangedInterface
   public function getAmountType();
 
   /**
-   * @return Price
+   * @return \Drupal\commerce_price\Price
    */
   public function getAmount();
 
@@ -57,7 +54,7 @@ interface LedgerInterface extends ContentEntityInterface, EntityChangedInterface
   public function getAccount();
 
   /**
-   * @return integer
+   * @return int
    */
   public function getAccountId();
 
@@ -65,4 +62,5 @@ interface LedgerInterface extends ContentEntityInterface, EntityChangedInterface
    * @return string
    */
   public function getAccountType();
+
 }

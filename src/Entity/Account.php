@@ -42,7 +42,7 @@ use Drupal\user\UserInterface;
  *     "bundle" = "type",
  *     "label" = "name",
  *     "uuid" = "uuid",
- *     "uid" = "user_id",
+ *     "uid" = "uid",
  *     "langcode" = "langcode",
  *   },
  *   links = {
@@ -57,228 +57,237 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "entity.account_type.edit_form"
  * )
  */
-class Account extends ContentEntityBase implements AccountInterface
-{
+class Account extends ContentEntityBase implements AccountInterface {
 
-    use EntityChangedTrait;
+  use EntityChangedTrait;
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function preCreate(EntityStorageInterface $storage_controller, array &$values)
-    {
-        parent::preCreate($storage_controller, $values);
+  /**
+   * {@inheritdoc}
+   */
+  public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
+    parent::preCreate($storage_controller, $values);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getName(): string {
+    return $this->get('name')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setName(string $name): AccountInterface {
+    $this->set('name', $name);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCurrencyCode(): string {
+    return $this->get('name')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCurrencyCode(string $currency_code): AccountInterface {
+    $this->set('currency_code', $currency_code);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCreatedTime(): int {
+    return $this->get('created')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCreatedTime(int $timestamp): AccountInterface {
+    $this->set('created', $timestamp);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    return $this->get('uid')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwnerId() {
+    return $this->get('uid')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwnerId($uid) {
+    $this->set('uid', $uid);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwner(UserInterface $account) {
+    $this->set('uid', $account->id());
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBalance(): Price {
+    if (!$this->get('balance')->isEmpty()) {
+      return $this->get('balance')->first()->toPrice();
     }
+    return new Price(0, $this->getCurrencyCode());
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->get('name')->value;
+  /**
+   * {@inheritdoc}
+   */
+  public function setBalance(Price $amount): AccountInterface {
+    $this->set('balance', $amount);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTotalCredit(): Price {
+    if (!$this->get('total_credit')->isEmpty()) {
+      return $this->get('total_credit')->first()->toPrice();
     }
+    return new Price(0, $this->getCurrencyCode());
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setName($name)
-    {
-        $this->set('name', $name);
-        return $this;
+  /**
+   * {@inheritdoc}
+   */
+  public function setTotalCredit(Price $amount): AccountInterface {
+    $this->set('total_credit', $amount);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTotalDebit(): Price {
+    if (!$this->get('total_debit')->isEmpty()) {
+      return $this->get('total_debit')->first()->toPrice();
     }
+    return new Price(0, $this->getCurrencyCode());
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCreatedTime()
-    {
-        return $this->get('created')->value;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function setTotalDebit(Price $amount): AccountInterface {
+    $this->set('total_debit', $amount);
+    return $this;
+  }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setCreatedTime($timestamp)
-    {
-        $this->set('created', $timestamp);
-        return $this;
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields = parent::baseFieldDefinitions($entity_type);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getOwner()
-    {
-        return $this->get('user_id')->entity;
-    }
+    // 账户所属用户.
+    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Owner'))
+      ->setSetting('target_type', 'user')
+      ->setSetting('handler', 'default')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'entity_reference_label',
+        'weight' => 0,
+      ]);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getOwnerId()
-    {
-        return $this->get('user_id')->target_id;
-    }
+    // 账户名称.
+    $fields['name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Account name'))
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ]);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOwnerId($uid)
-    {
-        $this->set('user_id', $uid);
-        return $this;
-    }
+    // 账户货币类型.
+    $fields['currency_code'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Account currency code'))
+      ->setDefaultValue('USD')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ]);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOwner(UserInterface $account)
-    {
-        $this->set('user_id', $account->id());
-        return $this;
-    }
+    // 账户进项累计（借记）.
+    $fields['total_debit'] = BaseFieldDefinition::create('commerce_price')
+      ->setLabel(t('Total debit'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'commerce_price_default',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
 
-    /**
-     * @return Price
-     * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-     */
-    public function getBalance()
-    {
-        if (!$this->get('balance')->isEmpty()) {
-            return $this->get('balance')->first()->toPrice();
-        }
-    }
+    // 账户出项累计（贷记）.
+    $fields['total_credit'] = BaseFieldDefinition::create('commerce_price')
+      ->setLabel(t('Total credit'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'commerce_price_default',
+        'weight' => 0,
+      ]);
 
-    /**
-     * @param Price $amount
-     * @return $this
-     */
-    public function setBalance(Price $amount)
-    {
-        $this->set('balance', $amount);
-        return $this;
-    }
+    // 账户余额.
+    $fields['balance'] = BaseFieldDefinition::create('commerce_price')
+      ->setLabel(t('Balance'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'commerce_price_default',
+        'weight' => 0,
+      ]);
 
-    /**
-     * @return Price
-     * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-     */
-    public function getTotalCredit()
-    {
-        if (!$this->get('total_credit')->isEmpty()) {
-            return $this->get('total_credit')->first()->toPrice();
-        }
-    }
+    $fields['created'] = BaseFieldDefinition::create('created')
+      ->setLabel(t('Created'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 0,
+      ]);
 
-    /**
-     * @param Price $amount
-     * @return $this
-     */
-    public function setTotalCredit(Price $amount)
-    {
-        $this->set('total_credit', $amount);
-        return $this;
-    }
+    $fields['changed'] = BaseFieldDefinition::create('changed')
+      ->setLabel(t('Changed'))
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'timestamp',
+        'weight' => 0,
+      ]);
 
-    /**
-     * @return Price
-     * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-     */
-    public function getTotalDebit()
-    {
-        if (!$this->get('total_debit')->isEmpty()) {
-            return $this->get('total_debit')->first()->toPrice();
-        }
-    }
-
-    /**
-     * @param Price $amount
-     * @return $this
-     */
-    public function setTotalDebit(Price $amount)
-    {
-        $this->set('total_debit', $amount);
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function baseFieldDefinitions(EntityTypeInterface $entity_type)
-    {
-        $fields = parent::baseFieldDefinitions($entity_type);
-
-        // 账户所属用户
-        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
-            ->setLabel(t('Owner'))
-            ->setSetting('target_type', 'user')
-            ->setSetting('handler', 'default')
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'entity_reference_label',
-                'weight' => 0,
-            ]);
-
-        // 账户名称
-        $fields['name'] = BaseFieldDefinition::create('string')
-            ->setLabel(t('Account name'))
-            ->setDefaultValue('')
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'string',
-                'weight' => 0,
-            ])
-            ->setDisplayOptions('form', [
-                'type' => 'string_textfield',
-                'weight' => 0,
-            ]);
-
-        // 账户进项累计（借记）
-        $fields['total_debit'] = BaseFieldDefinition::create('commerce_price')
-            ->setLabel(t('Total debit'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'commerce_price_default',
-                'weight' => 0,
-            ])
-            ->setDisplayConfigurable('form', TRUE)
-            ->setDisplayConfigurable('view', TRUE);
-
-        // 账户出项累计（贷记）
-        $fields['total_credit'] = BaseFieldDefinition::create('commerce_price')
-            ->setLabel(t('Total credit'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'commerce_price_default',
-                'weight' => 0,
-            ]);
-
-        // 账户余额
-        $fields['balance'] = BaseFieldDefinition::create('commerce_price')
-            ->setLabel(t('Balance'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'commerce_price_default',
-                'weight' => 0,
-            ]);
-
-        $fields['created'] = BaseFieldDefinition::create('created')
-            ->setLabel(t('Created'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'timestamp',
-                'weight' => 0,
-            ]);
-
-        $fields['changed'] = BaseFieldDefinition::create('changed')
-            ->setLabel(t('Changed'))
-            ->setDisplayOptions('view', [
-                'label' => 'inline',
-                'type' => 'timestamp',
-                'weight' => 0,
-            ]);
-
-        return $fields;
-    }
+    return $fields;
+  }
 
 }

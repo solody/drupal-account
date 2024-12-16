@@ -7,19 +7,28 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 /**
  * Provides an interface for defining Account type entities.
  */
-interface AccountTypeInterface extends ConfigEntityInterface
-{
+interface AccountTypeInterface extends ConfigEntityInterface {
 
-    // Add get/set methods for your configuration properties here.
+  // Add get/set methods for your configuration properties here.
 
-    /**
-     * @return string
-     */
-    public function getLabel();
+  /**
+   * @return string
+   */
+  public function getLabel();
 
-    public function getWithdrawPeriod();
+  /**
+   *
+   */
+  public function getWithdrawPeriod();
 
-    public function getMinimumWithdraw();
+  /**
+   *
+   */
+  public function getMinimumWithdraw();
 
-    public function getMaximumWithdraw();
+  /**
+   *
+   */
+  public function getMaximumWithdraw();
+
 }

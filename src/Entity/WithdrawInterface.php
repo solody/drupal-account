@@ -2,10 +2,8 @@
 
 namespace Drupal\account\Entity;
 
-use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides an interface for defining Withdraw entities.
@@ -34,7 +32,6 @@ interface WithdrawInterface extends ContentEntityInterface, EntityChangedInterfa
    *   The called Withdraw entity.
    */
   public function setName($name);
-
 
   /**
    * Gets the Withdraw transaction_number.
@@ -74,9 +71,8 @@ interface WithdrawInterface extends ContentEntityInterface, EntityChangedInterfa
    */
   public function setCreatedTime($timestamp);
 
-
   /**
-   * @return Price
+   * @return \Drupal\commerce_price\Price
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function getAmount();
@@ -96,4 +92,5 @@ interface WithdrawInterface extends ContentEntityInterface, EntityChangedInterfa
    * @return TransferMethodInterface
    */
   public function getTransferMethod();
+
 }

@@ -9,7 +9,6 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface TransferGatewayInterface extends ConfigEntityInterface {
 
-
   /**
    * Gets the payment gateway plugin.
    *

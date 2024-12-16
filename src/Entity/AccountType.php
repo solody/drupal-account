@@ -39,61 +39,69 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   }
  * )
  */
-class AccountType extends ConfigEntityBundleBase implements AccountTypeInterface
-{
+class AccountType extends ConfigEntityBundleBase implements AccountTypeInterface {
 
-    /**
-     * The Account type ID.
-     *
-     * @var string
-     */
-    protected $id;
+  /**
+   * The Account type ID.
+   *
+   * @var string
+   */
+  protected $id;
 
-    /**
-     * The Account type label.
-     *
-     * @var string
-     */
-    protected $label;
+  /**
+   * The Account type label.
+   *
+   * @var string
+   */
+  protected $label;
 
-    /**
-     * 提现周期（天）
-     *
-     * @var integer
-     */
-    protected $withdraw_period;
+  /**
+   * 提现周期（天）
+   *
+   * @var int
+   */
+  protected $withdraw_period;
 
-    /**
-     * 最小单笔提现限额
-     *
-     * @var float
-     */
-    protected $minimum_withdraw;
+  /**
+   * 最小单笔提现限额
+   *
+   * @var float
+   */
+  protected $minimum_withdraw;
 
-    /**
-     * 最大单笔提现限额
-     *
-     * @var float
-     */
-    protected $maximum_withdraw;
+  /**
+   * 最大单笔提现限额
+   *
+   * @var float
+   */
+  protected $maximum_withdraw;
 
-    public function getLabel()
-    {
-        return $this->label;
-    }
+  /**
+   *
+   */
+  public function getLabel() {
+    return $this->label;
+  }
 
-    public function getWithdrawPeriod()
-    {
-        return $this->withdraw_period;
-    }
+  /**
+   *
+   */
+  public function getWithdrawPeriod() {
+    return $this->withdraw_period;
+  }
 
-    public function getMinimumWithdraw()
-    {
-        return $this->minimum_withdraw;
-    }
+  /**
+   *
+   */
+  public function getMinimumWithdraw() {
+    return $this->minimum_withdraw;
+  }
 
-    public function getMaximumWithdraw()
-    {
-        return $this->maximum_withdraw;
-    }
+  /**
+   *
+   */
+  public function getMaximumWithdraw() {
+    return $this->maximum_withdraw;
+  }
+
 }
