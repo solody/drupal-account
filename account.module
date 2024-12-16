@@ -16,8 +16,7 @@ function account_help($route_name, RouteMatchInterface $route_match)
   switch ($route_name) {
     // Main module help for the account module.
     case 'help.page.account':
-      $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
+      $output = '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t('Provides finance functionality.') . '</p>';
       return $output;
 

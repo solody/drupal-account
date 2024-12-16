@@ -1,3 +1,27 @@
+entity.account_test.add_page:
+  route_name: entity.account.add_page
+  title: 'Add Account'
+  appears_on:
+    - entity.account.collection
+
+entity.ledger.add_form:
+  route_name: entity.ledger.add_form
+  title: 'Add Ledger'
+  appears_on:
+    - entity.ledger.collection
+
+entity.account_transfer_method.add_form:
+  route_name: entity.account_transfer_method.add_form
+  title: 'Add account_transfer_method'
+  appears_on:
+    - entity.account_transfer_method.collection
+
+entity.withdraw.add_form:
+  route_name: entity.withdraw.add_form
+  title: 'Add withdraw'
+  appears_on:
+    - entity.withdraw.collection
+
 entity.account_type.add_form:
   route_name: entity.account_type.add_form
   title: 'Add Account type'

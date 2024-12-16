@@ -30,12 +30,16 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "label" = "label",
  *     "uuid" = "uuid"
  *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *   },
  *   links = {
- *     "canonical" = "/admin/account/account_type/{account_type}",
- *     "add-form" = "/admin/account/account_type/add",
- *     "edit-form" = "/admin/account/account_type/{account_type}/edit",
- *     "delete-form" = "/admin/account/account_type/{account_type}/delete",
- *     "collection" = "/admin/account/account_type"
+ *     "canonical" = "/admin/finance/account_type/{account_type}",
+ *     "add-form" = "/admin/finance/account_type/add",
+ *     "edit-form" = "/admin/finance/account_type/{account_type}/edit",
+ *     "delete-form" = "/admin/finance/account_type/{account_type}/delete",
+ *     "collection" = "/admin/finance/account_type"
  *   }
  * )
  */
@@ -86,22 +90,22 @@ class AccountType extends ConfigEntityBundleBase implements AccountTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function getWithdrawPeriod(): int {
-    return $this->withdraw_period;
+  public function getWithdrawPeriod(): ?int {
+    return $this->withdraw_period ?? NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getMinimumWithdraw(): float {
-    return $this->minimum_withdraw;
+  public function getMinimumWithdraw(): ?float {
+    return $this->minimum_withdraw ?? NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getMaximumWithdraw(): float {
-    return $this->maximum_withdraw;
+  public function getMaximumWithdraw(): ?float {
+    return $this->maximum_withdraw ?? NULL;
   }
 
 }

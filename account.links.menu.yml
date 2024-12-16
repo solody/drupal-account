@@ -29,8 +29,14 @@ entity.account_transfer_gateway.collection:
 
 
 entity.account.collection:
-  title: 'Account list'
+  title: 'Accounts'
   route_name: entity.account.collection
+  parent: account.admin_root
+  weight: 100
+
+entity.ledger.collection:
+  title: 'Ledgers'
+  route_name: entity.ledger.collection
   parent: account.admin_root
   weight: 100
 
@@ -43,6 +49,12 @@ entity.account_transfer_method.collection:
 
 entity.withdraw.collection:
   title: 'Withdraw list'
+  route_name: entity.withdraw.collection
+  parent: account.admin_root
+  weight: 100
+
+entity.withdraw.collection.views:
+  title: 'Withdraw view list'
   route_name: view.withdraw_admin.page_1
   route_parameters: { account_type: 'all' }
   parent: account.admin_root

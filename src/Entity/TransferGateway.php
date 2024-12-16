@@ -30,11 +30,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "/admin/account/account_transfer_gateway/{account_transfer_gateway}",
- *     "add-form" = "/admin/account/account_transfer_gateway/add",
- *     "edit-form" = "/admin/account/account_transfer_gateway/{account_transfer_gateway}/edit",
- *     "delete-form" = "/admin/account/account_transfer_gateway/{account_transfer_gateway}/delete",
- *     "collection" = "/admin/account/account_transfer_gateway"
+ *     "canonical" = "/admin/finance/account_transfer_gateway/{account_transfer_gateway}",
+ *     "add-form" = "/admin/finance/account_transfer_gateway/add",
+ *     "edit-form" = "/admin/finance/account_transfer_gateway/{account_transfer_gateway}/edit",
+ *     "delete-form" = "/admin/finance/account_transfer_gateway/{account_transfer_gateway}/delete",
+ *     "collection" = "/admin/finance/account_transfer_gateway"
  *   }
  * )
  */

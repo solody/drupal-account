@@ -42,11 +42,11 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "langcode" = "langcode",
  *   },
  *   links = {
- *     "canonical" = "/admin/account/withdraw/{withdraw}",
- *     "add-form" = "/admin/account/withdraw/add",
- *     "edit-form" = "/admin/account/withdraw/{withdraw}/edit",
- *     "delete-form" = "/admin/account/withdraw/{withdraw}/delete",
- *     "collection" = "/admin/account/withdraw",
+ *     "canonical" = "/admin/finance/withdraw/{withdraw}",
+ *     "add-form" = "/admin/finance/withdraw/add",
+ *     "edit-form" = "/admin/finance/withdraw/{withdraw}/edit",
+ *     "delete-form" = "/admin/finance/withdraw/{withdraw}/delete",
+ *     "collection" = "/admin/finance/withdraw",
  *   },
  *   field_ui_base_route = "withdraw.settings"
  * )

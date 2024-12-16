@@ -42,11 +42,11 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "langcode" = "langcode",
  *   },
  *   links = {
- *     "canonical" = "/admin/account/ledger/{ledger}",
- *     "add-form" = "/admin/account/ledger/add",
- *     "edit-form" = "/admin/account/ledger/{ledger}/edit",
- *     "delete-form" = "/admin/account/ledger/{ledger}/delete",
- *     "collection" = "/admin/account/ledger",
+ *     "canonical" = "/admin/finance/ledger/{ledger}",
+ *     "add-form" = "/admin/finance/ledger/add",
+ *     "edit-form" = "/admin/finance/ledger/{ledger}/edit",
+ *     "delete-form" = "/admin/finance/ledger/{ledger}/delete",
+ *     "collection" = "/admin/finance/ledger",
  *   },
  *   field_ui_base_route = "ledger.settings"
  * )

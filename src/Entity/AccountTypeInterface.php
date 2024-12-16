@@ -17,16 +17,16 @@ interface AccountTypeInterface extends ConfigEntityInterface {
   /**
    * Get the withdrawal period.
    */
-  public function getWithdrawPeriod(): int;
+  public function getWithdrawPeriod(): ?int;
 
   /**
    * Get the minimum limitation of withdrawal.
    */
-  public function getMinimumWithdraw(): float;
+  public function getMinimumWithdraw(): ?float;
 
   /**
    * Get the maximum limitation of withdrawal.
    */
-  public function getMaximumWithdraw(): float;
+  public function getMaximumWithdraw(): ?float;
 
 }

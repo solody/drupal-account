@@ -18,6 +18,13 @@ use Drupal\user\UserInterface;
  * @ContentEntityType(
  *   id = "account",
  *   label = @Translation("Account"),
+ *   label_collection = @Translation("Accounts"),
+ *   label_singular = @Translation("Account"),
+ *   label_plural = @Translation("Accounts"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count Accounts",
+ *     plural = "@count Accounts",
+ *   ),
  *   bundle_label = @Translation("Account type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
@@ -42,16 +49,16 @@ use Drupal\user\UserInterface;
  *     "bundle" = "type",
  *     "label" = "name",
  *     "uuid" = "uuid",
- *     "uid" = "uid",
+ *     "owner" = "uid",
  *     "langcode" = "langcode",
  *   },
  *   links = {
- *     "canonical" = "/admin/account/account/{account}",
- *     "add-page" = "/admin/account/account/add",
- *     "add-form" = "/admin/account/account/add/{account_type}",
- *     "edit-form" = "/admin/account/account/{account}/edit",
- *     "delete-form" = "/admin/account/account/{account}/delete",
- *     "collection" = "/admin/account/account",
+ *     "canonical" = "/admin/finance/account/{account}",
+ *     "add-page" = "/admin/finance/account/add",
+ *     "add-form" = "/admin/finance/account/add/{account_type}",
+ *     "edit-form" = "/admin/finance/account/{account}/edit",
+ *     "delete-form" = "/admin/finance/account/{account}/delete",
+ *     "collection" = "/admin/finance/account",
  *   },
  *   bundle_entity_type = "account_type",
  *   field_ui_base_route = "entity.account_type.edit_form"

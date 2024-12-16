@@ -73,13 +73,13 @@ class AccountTypeForm extends EntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label Account type.', [
+        ($this->t('Created the %label Account type.', [
           '%label' => $account_type->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label Account type.', [
+        $this->messenger()->addStatus($this->t('Saved the %label Account type.', [
           '%label' => $account_type->label(),
         ]));
     }

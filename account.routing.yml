@@ -1,5 +1,5 @@
 account.admin:
-  path: '/admin/account'
+  path: '/admin/finance'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
     _title: 'Finance'
@@ -7,7 +7,7 @@ account.admin:
     _permission: 'access account administration pages'
 
 account.admin.config:
-  path: '/admin/account/config'
+  path: '/admin/finance/config'
   defaults:
     _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
     _title: 'Configuration'
@@ -15,7 +15,7 @@ account.admin.config:
     _permission: 'access account administration pages'
 
 account.account_apply_withdraw_form:
-  path: '/admin/account/form/apply_withdraw/{account}'
+  path: '/admin/finance/form/apply_withdraw/{account}'
   defaults:
     _form: '\Drupal\account\Form\ApplyWithdrawForm'
     _title: 'Apply withdraw'
@@ -23,7 +23,7 @@ account.account_apply_withdraw_form:
     _permission: 'apply withdraw for own finance account'
 
 account.manual_add_account_ledger_form:
-  path: '/admin/account/form/manual_add_account_ledger/{account_id}'
+  path: '/admin/finance/form/manual_add_account_ledger/{account_id}'
   defaults:
     _form: '\Drupal\account\Form\ManualAddAccountLedgerForm'
     _title: '手动调整余额'
