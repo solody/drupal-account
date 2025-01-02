@@ -83,6 +83,16 @@ final class AccountingTest extends KernelTestBase {
     );
 
     self::assertEquals(0, $amount->compareTo($finance_manager->computeAvailableBalance($account)));
+
+    $amount2 = new Price('300', 'USD');
+    $finance_manager->createLedger(
+      $account,
+      LedgerInterface::AMOUNT_TYPE_DEBIT,
+      $amount2,
+      'Something',
+    );
+
+    self::assertEquals(0, $amount->add($amount2)->compareTo($finance_manager->computeAvailableBalance($account)));
   }
 
 }
