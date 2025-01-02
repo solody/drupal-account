@@ -120,7 +120,7 @@ class ApplyWithdraw extends ResourceBase {
     }
 
     try {
-      $withdraw = $this->financeManager->applyWithdraw($account, new Price($data['amount'], 'CNY'), $transfer_method, $data['remarks']);
+      $withdraw = $this->financeManager->applyWithdraw($account, new Price($data['amount'], $account->getCurrencyCode()), $transfer_method, $data['remarks']);
     }
     catch (\Exception $e) {
       throw new BadRequestHttpException($e->getMessage(), $e);

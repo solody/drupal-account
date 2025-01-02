@@ -22,7 +22,7 @@ interface FinanceManagerInterface {
      * @param $type
      * @return Account
      */
-    public function createAccount(AccountInterface $user, $type);
+    public function createAccount(AccountInterface $user, string $type, string $currency_code);
 
     /**
      * 获取一个账户

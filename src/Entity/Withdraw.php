@@ -197,7 +197,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
       ->setSetting('workflow', 'withdraw_default');
 
     // 处理人（审核人）.
-    $fields['auditor_user_id'] = BaseFieldDefinition::create('entity_reference')
+    $fields['auditor_uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Auditor'))
       ->setRevisionable(TRUE)
       ->setSetting('target_type', 'user')

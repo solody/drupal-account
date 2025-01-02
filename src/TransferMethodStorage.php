@@ -10,9 +10,9 @@ use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
  */
 class TransferMethodStorage extends SqlContentEntityStorage {
 
-  public function loadDefault($user_id) {
+  public function loadDefault($uid) {
     $methods = $this->loadByProperties([
-      'user_id' => $user_id,
+      'uid' => $uid,
       'is_default' => true
     ]);
 
@@ -20,13 +20,13 @@ class TransferMethodStorage extends SqlContentEntityStorage {
     else return false;
   }
 
-  public function setDefault(TransferMethodInterface $default_method, $user_id) {
-    if ($default_method->getOwnerId() !== $user_id)
-      throw new \Exception('This transfer method doesn\'t belong to user '.$user_id.'.');
+  public function setDefault(TransferMethodInterface $default_method, $uid) {
+    if ($default_method->getOwnerId() !== $uid)
+      throw new \Exception('This transfer method doesn\'t belong to user '.$uid.'.');
 
     /** @var TransferMethodInterface[] $methods */
     $methods = $this->loadByProperties([
-      'user_id' => $user_id
+      'uid' => $uid
     ]);
 
     $saved_default = null;

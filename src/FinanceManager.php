@@ -36,9 +36,9 @@ class FinanceManager implements FinanceManagerInterface {
   public function getAccount(AccountInterface $user, $type) {
     /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
     $query = \Drupal::entityQuery('account')
-      ->condition('user_id', $user->id())
+      ->condition('uid', $user->id())
       ->condition('type', $type);
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
 
     if (!empty($ids)) {
       return Account::load(array_pop($ids));
@@ -77,7 +77,7 @@ class FinanceManager implements FinanceManagerInterface {
       try {
 
         // 计算余额.
-        $balance = new Price('0.00', 'CNY');
+        $balance = new Price('0.00', $financeAccount->getCurrencyCode());
         $last_ledger = $this->getLastLedger($financeAccount);
         if ($last_ledger) {
           $balance = $last_ledger->getBalance();
@@ -132,8 +132,8 @@ class FinanceManager implements FinanceManagerInterface {
    */
   public function updateAccountStatistics(Account $account) {
     $ledgers = $this->getLedgers($account);
-    $total_debit = new Price('0.00', 'CNY');
-    $total_credit = new Price('0.00', 'CNY');
+    $total_debit = new Price('0.00', $account->getCurrencyCode());
+    $total_credit = new Price('0.00', $account->getCurrencyCode());
 
     foreach ($ledgers as $ledger) {
       /** @var \Drupal\account\Entity\Ledger $ledger */
@@ -149,7 +149,7 @@ class FinanceManager implements FinanceManagerInterface {
     $account->setTotalCredit($total_credit);
 
     // 计算余额.
-    $balance = new Price('0.00', 'CNY');
+    $balance = new Price('0.00', $account->getCurrencyCode());
     $last_ledger = $this->getLastLedger($account);
     if ($last_ledger) {
       $balance = $last_ledger->getBalance();
@@ -170,7 +170,7 @@ class FinanceManager implements FinanceManagerInterface {
       ->condition('account_id', $financeAccount->id())
       ->sort('id', 'DESC')
       ->range(0, 1);
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
 
     if (!empty($ids)) {
       return Ledger::load(array_pop($ids));
@@ -183,17 +183,18 @@ class FinanceManager implements FinanceManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function createAccount(AccountInterface $user, $type) {
+  public function createAccount(AccountInterface $user, string $type, string $currency_code) {
     $account = $this->getAccount($user, $type);
 
     if (!$account) {
       $account_type = AccountType::load($type);
-      $price = new Price('0.00', 'CNY');
+      $price = new Price('0.00', $currency_code);
 
       $account = Account::create([
-        'user_id' => $user->id(),
+        'uid' => $user->id(),
         'type' => $type,
-        'name' => $account_type->getLabel(),
+        'name' => $account_type->label(),
+        'currency_code' => $currency_code,
         'total_debit' => $price,
         'total_credit' => $price,
         'balance' => $price,
@@ -238,7 +239,7 @@ class FinanceManager implements FinanceManagerInterface {
       ->condition('account_id', $account->id());
     $ids = $query->execute();
 
-    $price = new Price('0.00', 'CNY');
+    $price = new Price('0.00', $account->getCurrencyCode());
     if (count($ids)) {
       $withdraws = Withdraw::loadMultiple($ids);
 
@@ -267,7 +268,7 @@ class FinanceManager implements FinanceManagerInterface {
       ->condition('account_id', $account->id());
     $ids = $query->execute();
 
-    $price = new Price('0.00', 'CNY');
+    $price = new Price('0.00', $account->getCurrencyCode());
     if (count($ids)) {
       $withdraws = Withdraw::loadMultiple($ids);
 
@@ -290,7 +291,7 @@ class FinanceManager implements FinanceManagerInterface {
    * @throws \Exception
    */
   public function computeAvailableBalance(Account $account) {
-    $amount = new Price('0.00', 'CNY');
+    $amount = new Price('0.00', $account->getCurrencyCode());
 
     $ledgers = $this->getLedgers($account);
     $account_type = AccountType::load($account->bundle());
@@ -320,7 +321,7 @@ class FinanceManager implements FinanceManagerInterface {
     /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
     $query = \Drupal::entityQuery('ledger')
       ->condition('account_id', $account->id());
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
 
     if (count($ids)) {
       return Ledger::loadMultiple($ids);

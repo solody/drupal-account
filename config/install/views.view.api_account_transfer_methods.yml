@@ -143,10 +143,10 @@ display:
       empty: {  }
       relationships: {  }
       arguments:
-        user_id:
-          id: user_id
+        uid:
+          id: uid
           table: account_transfer_method
-          field: user_id
+          field: uid
           relationship: none
           group_type: group
           admin_label: ''
@@ -178,7 +178,7 @@ display:
           break_phrase: false
           not: false
           entity_type: account_transfer_method
-          entity_field: user_id
+          entity_field: uid
           plugin_id: numeric
       display_extenders: {  }
     cache_metadata:
@@ -197,7 +197,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: api/rest/views/account/transfer-methods/%user_id
+      path: api/rest/views/account/transfer-methods/%uid
       pager:
         type: full
         options:

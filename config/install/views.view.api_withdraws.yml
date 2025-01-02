@@ -218,10 +218,10 @@ display:
           entity_field: account_id
           plugin_id: standard
       arguments:
-        user_id:
-          id: user_id
+        uid:
+          id: uid
           table: account
-          field: user_id
+          field: uid
           relationship: account_id
           group_type: group
           admin_label: ''
@@ -253,7 +253,7 @@ display:
           break_phrase: false
           not: false
           entity_type: account
-          entity_field: user_id
+          entity_field: uid
           plugin_id: numeric
       display_extenders: {  }
     cache_metadata:
@@ -272,7 +272,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: api/rest/views/finance/withdraws/%user_id
+      path: api/rest/views/finance/withdraws/%uid
       pager:
         type: full
         options:

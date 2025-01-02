@@ -94,7 +94,7 @@ class Account extends ContentEntityBase implements AccountInterface {
    * {@inheritdoc}
    */
   public function getCurrencyCode(): string {
-    return $this->get('name')->value;
+    return $this->get('currency_code')->value;
   }
 
   /**

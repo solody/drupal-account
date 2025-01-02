@@ -21,7 +21,7 @@ Authorization: Basic {{username}} {{password}}
   "type": "alipay",
   "transfer_gateway": "alipay",
   "name": "sdfsdf",
-  "user_id": "1",
+  "uid": "1",
   "alipay_name": "王哈哈",
   "alipay_account": "1267867@qq.com"
 }

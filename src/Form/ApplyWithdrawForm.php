@@ -76,11 +76,11 @@ class ApplyWithdrawForm extends FormBase {
     if ($account_type->getMinimumWithdraw() || $account_type->getMaximumWithdraw()) {
       $withdraw_limitation = '';
       if ($account_type->getMinimumWithdraw()) {
-        $price = $this->currencyFormatter->format((string)$account_type->getMinimumWithdraw(), 'CNY');
+        $price = $this->currencyFormatter->format((string)$account_type->getMinimumWithdraw(), $account->getCurrencyCode());
         $withdraw_limitation .= '<div>最低限制：'.$price.'</div>';
       }
       if ($account_type->getMaximumWithdraw()) {
-        $price = $this->currencyFormatter->format((string)$account_type->getMaximumWithdraw(), 'CNY');
+        $price = $this->currencyFormatter->format((string)$account_type->getMaximumWithdraw(), $account->getCurrencyCode());
         $withdraw_limitation .= '<div>最高限制：'.$price.'</div>';
       }
     }
@@ -111,18 +111,18 @@ class ApplyWithdrawForm extends FormBase {
     $form['withdraw']['amount'] = [
       '#type' => 'commerce_price',
       '#title' => $this->t('输入要提现的金额'),
-      '#default_value' => ['number' => '100.00', 'currency_code' => 'CNY'],
+      '#default_value' => ['number' => '100.00', 'currency_code' => $account->getCurrencyCode()],
       '#allow_negative' => FALSE,
       '#size' => 30,
       '#maxlength' => 128,
       '#required' => TRUE,
-      '#available_currencies' => ['CNY'],
+      '#available_currencies' => [$account->getCurrencyCode()],
     ];
-    
+
     // 选择提现方式
     $transfer_methods = \Drupal::entityTypeManager()
       ->getStorage('account_transfer_method')
-      ->loadByProperties(['user_id' => $this->currentUser()->id()]);
+      ->loadByProperties(['uid' => $this->currentUser()->id()]);
 
     $transfer_method_options = [];
     $default_transfer_method = null;
@@ -167,11 +167,11 @@ class ApplyWithdrawForm extends FormBase {
     }
     if ($account_type->getMinimumWithdraw() &&
       (float)$amount_price->getNumber() < (float)$account_type->getMinimumWithdraw()) {
-      $form_state->setError($form['withdraw']['amount'], '没到达到最小提现限额（'.$this->currencyFormatter->format($account_type->getMinimumWithdraw(), 'CNY').'）');
+      $form_state->setError($form['withdraw']['amount'], '没到达到最小提现限额（'.$this->currencyFormatter->format($account_type->getMinimumWithdraw(), $account->getCurrencyCode()).'）');
     }
     if ($account_type->getMaximumWithdraw() &&
       (float)$amount_price->getNumber() > (float)$account_type->getMaximumWithdraw()) {
-      $form_state->setError($form['withdraw']['amount'], '超过了最大提现限额（'.$this->currencyFormatter->format($account_type->getMaximumWithdraw(), 'CNY').'）');
+      $form_state->setError($form['withdraw']['amount'], '超过了最大提现限额（'.$this->currencyFormatter->format($account_type->getMaximumWithdraw(), $account->getCurrencyCode()).'）');
     }
   }
 
