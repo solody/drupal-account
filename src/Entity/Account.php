@@ -213,6 +213,7 @@ class Account extends ContentEntityBase implements AccountInterface {
     // 账户所属用户.
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Owner'))
+      ->setRequired(TRUE)
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
       ->setDisplayOptions('view', [
@@ -233,6 +234,7 @@ class Account extends ContentEntityBase implements AccountInterface {
     // 账户名称.
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Account name'))
+      ->setRequired(TRUE)
       ->setDefaultValue('')
       ->setDisplayOptions('view', [
         'label' => 'inline',
@@ -247,7 +249,7 @@ class Account extends ContentEntityBase implements AccountInterface {
     // 账户货币类型.
     $fields['currency_code'] = BaseFieldDefinition::create('list_string')
       ->setLabel(t('Account currency code'))
-      ->setDefaultValue('USD')
+      ->setRequired(TRUE)
       ->setSetting('allowed_values_function', 'Drupal\account\Entity\Account::getAllowedCurrencyCodes')
       ->setDisplayOptions('view', [
         'label' => 'inline',
