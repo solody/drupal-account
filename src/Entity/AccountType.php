@@ -33,6 +33,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   config_export = {
  *     "id",
  *     "label",
+ *     "currency",
  *     "withdraw_period",
  *     "minimum_withdraw",
  *     "maximum_withdraw",
@@ -63,6 +64,13 @@ class AccountType extends ConfigEntityBundleBase implements AccountTypeInterface
   protected string $label;
 
   /**
+   * The currency of the type of account.
+   *
+   * @var string
+   */
+  protected string $currency;
+
+  /**
    * 提现周期（天）.
    *
    * @var int
@@ -82,6 +90,13 @@ class AccountType extends ConfigEntityBundleBase implements AccountTypeInterface
    * @var float
    */
   protected float $maximum_withdraw = 0.0;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCurrency(): string {
+    return $this->currency;
+  }
 
   /**
    * {@inheritdoc}

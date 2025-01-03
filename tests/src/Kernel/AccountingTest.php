@@ -26,7 +26,7 @@ final class AccountingTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['account', 'options', 'user', 'commerce', 'commerce_price', 'dynamic_entity_reference'];
+  protected static $modules = ['account', 'system', 'options', 'user', 'commerce', 'commerce_price', 'dynamic_entity_reference'];
 
   /**
    * {@inheritdoc}
@@ -48,8 +48,10 @@ final class AccountingTest extends KernelTestBase {
     $account_type = AccountType::create([
       'id' => 'something',
       'label' => 'something',
+      'currency' => 'USD',
     ]);
     $account_type->save();
+    self::assertEquals('USD', $account_type->getCurrency());
     $account = Account::create([
       'type' => $account_type->id(),
       'name' => 'something',

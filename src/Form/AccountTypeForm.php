@@ -27,6 +27,15 @@ class AccountTypeForm extends EntityForm {
       '#required' => TRUE,
     ];
 
+    $form['currency'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Currency'),
+      '#maxlength' => 255,
+      '#default_value' => $account_type->label(),
+      '#description' => $this->t("Currency code for the account type."),
+      '#required' => TRUE,
+    ];
+
     $form['id'] = [
       '#type' => 'machine_name',
       '#default_value' => $account_type->id(),

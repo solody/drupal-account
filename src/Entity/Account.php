@@ -94,15 +94,8 @@ class Account extends ContentEntityBase implements AccountInterface {
    * {@inheritdoc}
    */
   public function getCurrencyCode(): string {
-    return $this->get('currency_code')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCurrencyCode(string $currency_code): AccountInterface {
-    $this->set('currency_code', $currency_code);
-    return $this;
+    $type = $this->get('type')->referencedEntities();
+    return reset($type)->getCurrency();
   }
 
   /**
@@ -246,21 +239,6 @@ class Account extends ContentEntityBase implements AccountInterface {
         'weight' => 0,
       ]);
 
-    // 账户货币类型.
-    $fields['currency_code'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(t('Account currency code'))
-      ->setRequired(TRUE)
-      ->setSetting('allowed_values_function', 'Drupal\account\Entity\Account::getAllowedCurrencyCodes')
-      ->setDisplayOptions('view', [
-        'label' => 'inline',
-        'type' => 'list_default',
-        'weight' => 0,
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'options_select',
-        'weight' => 0,
-      ]);
-
     // 账户进项累计（借记）.
     $fields['total_debit'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Total debit'))
@@ -309,18 +287,6 @@ class Account extends ContentEntityBase implements AccountInterface {
       ]);
 
     return $fields;
-  }
-
-  /**
-   * Get allowed currency codes.
-   *
-   * @todo Read from commerce.
-   */
-  public static function getAllowedCurrencyCodes(): array {
-    return [
-      'USD' => 'USD',
-      'CNY' => 'CNY',
-    ];
   }
 
 }
