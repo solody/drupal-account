@@ -2,9 +2,13 @@
 
 namespace Drupal\account;
 
+use Drupal\account\Entity\LedgerInterface;
+use Drupal\account\Entity\WithdrawInterface;
 use Drupal\commerce_price\Price;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\account\Entity\Account;
+use Drupal\account\Entity\AccountInterface as FinanceAccountInterface;
 use Drupal\account\Entity\AccountType;
 use Drupal\account\Entity\Ledger;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -12,7 +16,7 @@ use Drupal\account\Entity\TransferMethod;
 use Drupal\account\Entity\Withdraw;
 
 /**
- * Class FinanceManager.
+ * The FinanceManager service.
  */
 class FinanceManager implements FinanceManagerInterface {
 
@@ -21,7 +25,7 @@ class FinanceManager implements FinanceManagerInterface {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * Constructs a new FinanceManager object.
@@ -33,8 +37,7 @@ class FinanceManager implements FinanceManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAccount(AccountInterface $user, $type) {
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
+  public function getAccount(AccountInterface $user, string $type): ?FinanceAccountInterface {
     $query = \Drupal::entityQuery('account')
       ->condition('uid', $user->id())
       ->condition('type', $type);
@@ -52,14 +55,15 @@ class FinanceManager implements FinanceManagerInterface {
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Exception
    */
   public function createLedger(
     Account $financeAccount,
-    $amountType,
+    string $amountType,
     Price $amount,
-    $remarks = '',
-    $source = NULL,
-  ) {
+    string $remarks = '',
+    ?EntityInterface $source = NULL,
+  ): LedgerInterface {
 
     \Drupal::moduleHandler()->alter('account_ledger_remarks', $remarks, $source);
 
@@ -124,23 +128,19 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * 更新账户统计
-   *
-   * @param \Drupal\account\Entity\Account $account
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * {@inheritdoc}
    */
-  public function updateAccountStatistics(Account $account) {
+  public function updateAccountStatistics(FinanceAccountInterface $account): void {
     $ledgers = $this->getLedgers($account);
     $total_debit = new Price('0.00', $account->getCurrencyCode());
     $total_credit = new Price('0.00', $account->getCurrencyCode());
 
     foreach ($ledgers as $ledger) {
       /** @var \Drupal\account\Entity\Ledger $ledger */
-      if ($ledger->getAmountType() === Ledger::AMOUNT_TYPE_DEBIT) {
+      if ($ledger->getAmountType() === LedgerInterface::AMOUNT_TYPE_DEBIT) {
         $total_debit = $total_debit->add($ledger->getAmount());
       }
-      elseif ($ledger->getAmountType() === Ledger::AMOUNT_TYPE_CREDIT) {
+      elseif ($ledger->getAmountType() === LedgerInterface::AMOUNT_TYPE_CREDIT) {
         $total_credit = $total_credit->add($ledger->getAmount());
       }
     }
@@ -161,11 +161,9 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * @param \Drupal\account\Entity\Account $financeAccount
-   * @return \Drupal\account\Entity\Ledger|null
+   * {@inheritdoc}
    */
-  public function getLastLedger(Account $financeAccount) {
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
+  public function getLastLedger(Account $financeAccount): ?LedgerInterface {
     $query = \Drupal::entityQuery('ledger')
       ->condition('account_id', $financeAccount->id())
       ->sort('id', 'DESC')
@@ -182,8 +180,10 @@ class FinanceManager implements FinanceManagerInterface {
 
   /**
    * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function createAccount(AccountInterface $user, string $type, string $currency_code) {
+  public function createAccount(AccountInterface $user, string $type, string $currency_code): FinanceAccountInterface {
     $account = $this->getAccount($user, $type);
 
     if (!$account) {
@@ -207,33 +207,27 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * 账户间转账
-   *
-   * @param \Drupal\account\Entity\Account $form
-   * @param \Drupal\account\Entity\Account $to
-   * @param \Drupal\commerce_price\Price $amount
-   * @param $message
+   * {@inheritdoc}
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function transfer(Account $form, Account $to, Price $amount, $message = '', $source = NULL) {
+  public function transfer(
+    Account $form,
+    Account $to,
+    Price $amount,
+    string $message = '',
+    ?EntityInterface $source = NULL,
+  ): void {
     // 记录出账.
-    $this->createLedger($form, Ledger::AMOUNT_TYPE_CREDIT, $amount, $message, $source);
+    $this->createLedger($form, LedgerInterface::AMOUNT_TYPE_CREDIT, $amount, $message, $source);
     // 记录进账.
-    $this->createLedger($to, Ledger::AMOUNT_TYPE_DEBIT, $amount, $message, $source);
+    $this->createLedger($to, LedgerInterface::AMOUNT_TYPE_DEBIT, $amount, $message, $source);
   }
 
   /**
-   * 统计账户正在处理的提现总额
-   *
-   * @param \Drupal\account\Entity\Account $account
-   *
-   * @return \Drupal\commerce_price\Price
-   *
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * {@inheritdoc}
    */
-  public function countPendingWithdrawTotalAmount(Account $account) {
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
+  public function countPendingWithdrawTotalAmount(FinanceAccountInterface $account): Price {
     $query = \Drupal::entityQuery('withdraw')
       ->condition('state', ['draft', 'processing'], 'IN')
       ->condition('account_id', $account->id());
@@ -253,16 +247,9 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * 统计账户已完成的提现总额
-   *
-   * @param \Drupal\account\Entity\Account $account
-   *
-   * @return \Drupal\commerce_price\Price
-   *
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * {@inheritdoc}
    */
-  public function countCompleteWithdrawTotalAmount(Account $account) {
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
+  public function countCompleteWithdrawTotalAmount(FinanceAccountInterface $account): Price {
     $query = \Drupal::entityQuery('withdraw')
       ->condition('state', 'completed')
       ->condition('account_id', $account->id());
@@ -282,30 +269,25 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * 计算账户的可用余额
-   *
-   * @param \Drupal\account\Entity\Account $account
-   *
-   * @return \Drupal\commerce_price\Price
+   * {@inheritdoc}
    *
    * @throws \Exception
    */
-  public function computeAvailableBalance(Account $account) {
+  public function computeAvailableBalance(Account $account): Price {
     $amount = new Price('0.00', $account->getCurrencyCode());
 
     $ledgers = $this->getLedgers($account);
     $account_type = AccountType::load($account->bundle());
-    $account_type->getWithdrawPeriod();
 
     $available_time = (new \DateTime())->sub(new \DateInterval('P' . (int) $account_type->getWithdrawPeriod() . 'D'));
 
     foreach ($ledgers as $ledger) {
-      if ($ledger->getAmountType() === Ledger::AMOUNT_TYPE_DEBIT) {
+      if ($ledger->getAmountType() === LedgerInterface::AMOUNT_TYPE_DEBIT) {
         if ($ledger->getCreatedTime() <= $available_time->getTimestamp()) {
           $amount = $amount->add($ledger->getAmount());
         }
       }
-      elseif ($ledger->getAmountType() === Ledger::AMOUNT_TYPE_CREDIT) {
+      elseif ($ledger->getAmountType() === LedgerInterface::AMOUNT_TYPE_CREDIT) {
         $amount = $amount->subtract($ledger->getAmount());
       }
     }
@@ -314,11 +296,9 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * @param \Drupal\account\Entity\Account $account
-   * @return \Drupal\account\Entity\Ledger[]
+   * {@inheritdoc}
    */
-  public function getLedgers(Account $account) {
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
+  public function getLedgers(Account $account): array {
     $query = \Drupal::entityQuery('ledger')
       ->condition('account_id', $account->id());
     $ids = $query->accessCheck(FALSE)->execute();
@@ -332,18 +312,16 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * 申请提现
-   *
-   * @param \Drupal\account\Entity\Account $account
-   * @param \Drupal\commerce_price\Price $amount
-   * @param \Drupal\account\Entity\TransferMethod $transferMethod
-   * @param string $remarks
-   *
-   * @return \Drupal\account\Entity\Withdraw
+   * {@inheritdoc}
    *
    * @throws \Exception
    */
-  public function applyWithdraw(Account $account, Price $amount, TransferMethod $transferMethod, $remarks = '') {
+  public function applyWithdraw(
+    Account $account,
+    Price $amount,
+    TransferMethod $transferMethod,
+    string $remarks = '',
+  ): WithdrawInterface {
     // 检查提现限制.
     $account_type = AccountType::load($account->bundle());
     if ((boolean) $account_type->getMaximumWithdraw() && (float) $amount->getNumber() > (float) $account_type->getMaximumWithdraw()) {
@@ -377,7 +355,7 @@ class FinanceManager implements FinanceManagerInterface {
 
     $this->createLedger(
       $withdraw->getAccount(),
-      Ledger::AMOUNT_TYPE_CREDIT,
+      LedgerInterface::AMOUNT_TYPE_CREDIT,
       $withdraw->getAmount(),
       '提现单 [' . $withdraw->id() . '] 提现支出' . $withdraw->getAmount()->getCurrencyCode() . $withdraw->getAmount()->getNumber(),
       $withdraw
@@ -387,14 +365,9 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * 检查是否有正在处理的提现单
-   *
-   * @param \Drupal\account\Entity\Account $account
-   *
-   * @return bool
+   * {@inheritdoc}
    */
-  public function hasProcessingWithdraw(Account $account) {
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
+  public function hasProcessingWithdraw(FinanceAccountInterface $account): bool {
     $query = \Drupal::entityQuery('withdraw')
       ->condition('account_id', $account->id())
       ->condition('state', ['draft', 'processing'], 'IN');
@@ -409,11 +382,9 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
-   * @param $type
-   * @return \Drupal\account\Entity\Account[]
+   * {@inheritdoc}
    */
-  public function getAccountsByType($type) {
-    /** @var \Drupal\Core\Entity\Query\QueryInterface $query */
+  public function getAccountsByType(string $type): array {
     $query = \Drupal::entityQuery('account')
       ->condition('type', $type);
     $ids = $query->execute();
