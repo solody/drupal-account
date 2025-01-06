@@ -342,7 +342,7 @@ class FinanceManager implements FinanceManagerInterface {
     }
 
     // 创建提现单.
-    /** @var \Drupal\account\Entity\Withdraw $withdraw */
+    /** @var \Drupal\account\Entity\WithdrawInterface $withdraw */
     $withdraw = Withdraw::create([
       'account_id' => $account,
       'amount' => $amount,
