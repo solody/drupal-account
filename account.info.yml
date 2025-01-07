@@ -1,19 +1,19 @@
-name: Finance account
+name: 'Finance account'
 type: module
 description: 'Provides finance accounting functionality.'
-core_version_requirement: '^9.4 || ^10 || ^11'
+core_version_requirement: '^10.3 || ^11'
 package: Finance
 dependencies:
-  - drupal:basic_auth
-  - commerce:commerce_price
-  - dynamic_entity_reference:dynamic_entity_reference
-  - entity:entity
-  - account:account
-  - drupal:options
-  - drupal:rest
-  - drupal:serialization
-  - simple_oauth:simple_oauth
-  - state_machine:state_machine
-  - drupal:system
-  - drupal:user
-  - drupal:views
+  - 'account:account'
+  - 'commerce:commerce_price'
+  - 'drupal:basic_auth'
+  - 'drupal:options'
+  - 'drupal:rest'
+  - 'drupal:serialization'
+  - 'drupal:system'
+  - 'drupal:user'
+  - 'drupal:views'
+  - 'dynamic_entity_reference:dynamic_entity_reference'
+  - 'entity:entity'
+  - 'simple_oauth:simple_oauth'
+  - 'state_machine:state_machine'
