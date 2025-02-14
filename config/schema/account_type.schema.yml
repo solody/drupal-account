@@ -20,5 +20,3 @@ account.account_type.*:
     maximum_withdraw:
       type: float
       label: 'Maximum withdraw limitation'
-    uuid:
-      type: string
