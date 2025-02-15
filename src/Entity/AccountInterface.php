@@ -39,7 +39,18 @@ interface AccountInterface extends ContentEntityInterface, EntityChangedInterfac
    * @return string
    *   Currency code of the Account.
    */
-  public function getCurrencyCode(): string;
+  public function getCurrency(): string;
+
+  /**
+   * Sets the currency code of this account.
+   *
+   * @param string $currency_code
+   *   The currency code.
+   *
+   * @return \Drupal\account\Entity\AccountInterface
+   *   The called Account entity.
+   */
+  public function setCurrency(string $currency_code): AccountInterface;
 
   /**
    * Gets the Account creation timestamp.

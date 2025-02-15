@@ -42,7 +42,7 @@ interface FinanceManagerInterface {
    * @return \Drupal\account\Entity\AccountInterface|null
    *   The account.
    */
-  public function getAccount(AccountInterface $user, string $type): ?FinanceAccountInterface;
+  public function getAccount(AccountInterface $user, string $type, string $currency_code): ?FinanceAccountInterface;
 
   /**
    * 增加记账记录.

@@ -8,9 +8,6 @@ account.account_type.*:
     label:
       type: label
       label: 'Label'
-    currency:
-      type: string
-      label: 'Currency'
     withdraw_period:
       type: integer
       label: 'Withdraw period'

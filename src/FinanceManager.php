@@ -37,18 +37,57 @@ class FinanceManager implements FinanceManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAccount(AccountInterface $user, string $type): ?FinanceAccountInterface {
-    $query = \Drupal::entityQuery('account')
-      ->condition('uid', $user->id())
-      ->condition('type', $type);
-    $ids = $query->accessCheck(FALSE)->execute();
+  public function getAccount(AccountInterface $user, string $type, string $currency_code): ?FinanceAccountInterface {
+    $lock = \Drupal::lock();
+    $operationID = 'finance__get_account';
+    $is_get_lock = $lock->acquire($operationID);
+    if (!$is_get_lock) {
+      if (!$lock->wait($operationID, 30)) {
+        $is_get_lock = $lock->acquire($operationID);
+      }
+    }
+    if ($is_get_lock) {
+      $query = \Drupal::entityQuery('account')
+        ->condition('uid', $user->id())
+        ->condition('type', $type)
+        ->condition('currency', $currency_code);
+      $ids = $query->accessCheck(FALSE)->execute();
 
-    if (!empty($ids)) {
-      return Account::load(array_pop($ids));
+      if (!empty($ids)) {
+        return Account::load(array_pop($ids));
+      }
+      else {
+        return $this->createAccount($user, $type, $currency_code);
+      }
     }
     else {
-      return NULL;
+      throw new \Exception('Can not acquire lock [' . $operationID . ']');
     }
+
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function createAccount(AccountInterface $user, string $type, string $currency_code): FinanceAccountInterface {
+    $account_type = AccountType::load($type);
+    $price = new Price('0.00', $currency_code);
+
+    $account = Account::create([
+      'uid' => $user->id(),
+      'type' => $type,
+      'name' => $account_type->label(),
+      'currency' => $currency_code,
+      'total_debit' => $price,
+      'total_credit' => $price,
+      'balance' => $price,
+    ]);
+
+    $account->save();
+
+    return $account;
   }
 
   /**
@@ -81,16 +120,16 @@ class FinanceManager implements FinanceManagerInterface {
       try {
 
         // 计算余额.
-        $balance = new Price('0.00', $financeAccount->getCurrencyCode());
+        $balance = new Price('0.00', $financeAccount->getCurrency());
         $last_ledger = $this->getLastLedger($financeAccount);
         if ($last_ledger) {
           $balance = $last_ledger->getBalance();
         }
 
-        if ($amountType === Ledger::AMOUNT_TYPE_DEBIT) {
+        if ($amountType === LedgerInterface::AMOUNT_TYPE_DEBIT) {
           $balance = $balance->add($amount);
         }
-        elseif ($amountType === Ledger::AMOUNT_TYPE_CREDIT) {
+        elseif ($amountType === LedgerInterface::AMOUNT_TYPE_CREDIT) {
           $balance = $balance->subtract($amount);
         }
 
@@ -132,8 +171,8 @@ class FinanceManager implements FinanceManagerInterface {
    */
   public function updateAccountStatistics(FinanceAccountInterface $account): void {
     $ledgers = $this->getLedgers($account);
-    $total_debit = new Price('0.00', $account->getCurrencyCode());
-    $total_credit = new Price('0.00', $account->getCurrencyCode());
+    $total_debit = new Price('0.00', $account->getCurrency());
+    $total_credit = new Price('0.00', $account->getCurrency());
 
     foreach ($ledgers as $ledger) {
       /** @var \Drupal\account\Entity\Ledger $ledger */
@@ -149,7 +188,7 @@ class FinanceManager implements FinanceManagerInterface {
     $account->setTotalCredit($total_credit);
 
     // 计算余额.
-    $balance = new Price('0.00', $account->getCurrencyCode());
+    $balance = new Price('0.00', $account->getCurrency());
     $last_ledger = $this->getLastLedger($account);
     if ($last_ledger) {
       $balance = $last_ledger->getBalance();
@@ -183,34 +222,6 @@ class FinanceManager implements FinanceManagerInterface {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function createAccount(AccountInterface $user, string $type, string $currency_code): FinanceAccountInterface {
-    $account = $this->getAccount($user, $type);
-
-    if (!$account) {
-      $account_type = AccountType::load($type);
-      $price = new Price('0.00', $currency_code);
-
-      $account = Account::create([
-        'uid' => $user->id(),
-        'type' => $type,
-        'name' => $account_type->label(),
-        'currency_code' => $currency_code,
-        'total_debit' => $price,
-        'total_credit' => $price,
-        'balance' => $price,
-      ]);
-
-      $account->save();
-    }
-
-    return $account;
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   */
   public function transfer(
     Account $form,
     Account $to,
@@ -233,7 +244,7 @@ class FinanceManager implements FinanceManagerInterface {
       ->condition('account_id', $account->id());
     $ids = $query->execute();
 
-    $price = new Price('0.00', $account->getCurrencyCode());
+    $price = new Price('0.00', $account->getCurrency());
     if (count($ids)) {
       $withdraws = Withdraw::loadMultiple($ids);
 
@@ -255,7 +266,7 @@ class FinanceManager implements FinanceManagerInterface {
       ->condition('account_id', $account->id());
     $ids = $query->execute();
 
-    $price = new Price('0.00', $account->getCurrencyCode());
+    $price = new Price('0.00', $account->getCurrency());
     if (count($ids)) {
       $withdraws = Withdraw::loadMultiple($ids);
 
@@ -274,7 +285,7 @@ class FinanceManager implements FinanceManagerInterface {
    * @throws \Exception
    */
   public function computeAvailableBalance(Account $account): Price {
-    $amount = new Price('0.00', $account->getCurrencyCode());
+    $amount = new Price('0.00', $account->getCurrency());
 
     $ledgers = $this->getLedgers($account);
     $account_type = AccountType::load($account->bundle());

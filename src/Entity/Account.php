@@ -93,9 +93,16 @@ class Account extends ContentEntityBase implements AccountInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCurrencyCode(): string {
-    $type = $this->get('type')->referencedEntities();
-    return reset($type)->getCurrency();
+  public function getCurrency(): string {
+    return $this->get('currency')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCurrency(string $currency_code): AccountInterface {
+    $this->set('currency', $currency_code);
+    return $this;
   }
 
   /**
@@ -229,6 +236,19 @@ class Account extends ContentEntityBase implements AccountInterface {
       ->setLabel(t('Account name'))
       ->setRequired(TRUE)
       ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'inline',
+        'type' => 'string',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 0,
+      ]);
+
+    $fields['currency'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Currency of this account'))
+      ->setRequired(TRUE)
       ->setDisplayOptions('view', [
         'label' => 'inline',
         'type' => 'string',

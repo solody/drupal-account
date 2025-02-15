@@ -12,11 +12,6 @@ interface AccountTypeInterface extends ConfigEntityInterface {
   /**
    * Get the withdrawal period.
    */
-  public function getCurrency(): string;
-
-  /**
-   * Get the withdrawal period.
-   */
   public function getWithdrawPeriod(): int;
 
   /**
