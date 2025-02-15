@@ -20,3 +20,8 @@ account.account_type.*:
     maximum_withdraw:
       type: float
       label: 'Maximum withdraw limitation'
+
+action.configuration.account_transfer_withdraw:
+  type: mapping
+  label: 'Action plugin config of account_transfer_withdraw'
+  mapping:
