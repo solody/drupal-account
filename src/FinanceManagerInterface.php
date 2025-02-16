@@ -150,11 +150,15 @@ interface FinanceManagerInterface {
    *
    * @param \Drupal\account\Entity\Account $account
    *   Which account.
+   * @param int|null $startTime
+   *   The start timestamp.
+   * @param int|null $endTime
+   *   The end timestamp.
    *
    * @return \Drupal\account\Entity\LedgerInterface[]
    *   Entity of ledgers.
    */
-  public function getLedgers(Account $account): array;
+  public function getLedgers(Account $account, ?int $startTime = NULL, ?int $endTime = NULL): array;
 
   /**
    * 申请提现.

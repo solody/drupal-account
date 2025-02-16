@@ -32,26 +32,6 @@ function account_toolbar_alter(&$items) {
 }
 
 /**
- * Implements hook_install().
- */
-function account_install()
-{
-  // 为已认证用户添加权限
-  user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, [
-    'add transfer method entities',
-    'edit transfer method entities',
-    'view transfer method entities',
-    'restful post account_apply_withdraw',
-    'restful get account_withdraw_limitation',
-    'view ledger entities',
-    'edit ledger entities',
-    'view withdraw entities',
-    'edit withdraw entities',
-    'apply withdraw for own finance account'
-  ]);
-}
-
-/**
  * Implements hook_theme().
  */
 function account_theme()

@@ -200,6 +200,28 @@ class FinanceManager implements FinanceManagerInterface {
   }
 
   /**
+   * Get account total income.
+   */
+  public function getAccountTotal(FinanceAccountInterface $account, ?int $startTime, ?int $endTime): array {
+    $ledgers = $this->getLedgers($account, $startTime, $endTime);
+    $total_debit = new Price('0.00', $account->getCurrency());
+    $total_credit = new Price('0.00', $account->getCurrency());
+    foreach ($ledgers as $ledger) {
+      /** @var \Drupal\account\Entity\Ledger $ledger */
+      if ($ledger->getAmountType() === LedgerInterface::AMOUNT_TYPE_DEBIT) {
+        $total_debit = $total_debit->add($ledger->getAmount());
+      }
+      elseif ($ledger->getAmountType() === LedgerInterface::AMOUNT_TYPE_CREDIT) {
+        $total_credit = $total_credit->add($ledger->getAmount());
+      }
+    }
+    return [
+      'total_debit' => $total_debit,
+      'total_credit' => $total_credit,
+    ];
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getLastLedger(Account $financeAccount): ?LedgerInterface {
@@ -309,9 +331,15 @@ class FinanceManager implements FinanceManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getLedgers(Account $account): array {
+  public function getLedgers(Account $account, ?int $startTime = NULL, ?int $endTime = NULL): array {
     $query = \Drupal::entityQuery('ledger')
       ->condition('account_id', $account->id());
+    if ($startTime) {
+      $query->condition('created', $startTime, '>=');
+    }
+    if ($startTime) {
+      $query->condition('created', $startTime, '<');
+    }
     $ids = $query->accessCheck(FALSE)->execute();
 
     if (count($ids)) {
