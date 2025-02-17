@@ -80,6 +80,11 @@ interface FinanceManagerInterface {
   public function updateAccountStatistics(FinanceAccountInterface $account): void;
 
   /**
+   * Get account total income.
+   */
+  public function getAccountTotal(FinanceAccountInterface $account, ?int $start_time = NULL, ?int $end_time = NULL): array;
+
+  /**
    * Get last ledger of the given account.
    *
    * @param \Drupal\account\Entity\Account $financeAccount
@@ -158,7 +163,7 @@ interface FinanceManagerInterface {
    * @return \Drupal\account\Entity\LedgerInterface[]
    *   Entity of ledgers.
    */
-  public function getLedgers(Account $account, ?int $startTime = NULL, ?int $endTime = NULL): array;
+  public function getLedgers(Account $account, ?int $start_time = NULL, ?int $end_time = NULL): array;
 
   /**
    * 申请提现.
