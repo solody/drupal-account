@@ -42,7 +42,7 @@ function template_preprocess_account(array &$variables)
   $variables['links'][] = [
     '#title' => t('查看账户流水'),
     '#type' => 'link',
-    '#url' => \Drupal\Core\Url::fromRoute('view.ledgers.page_1', ['account_id' => $account->id()]),
+    '#url' => \Drupal\Core\Url::fromRoute('entity.ledger.collection', ['account' => $account->id()]),
   ];
   // 调整账户余额按钮
   $variables['links'][] = [

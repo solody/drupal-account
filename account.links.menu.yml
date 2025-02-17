@@ -34,12 +34,6 @@ entity.account.collection:
   parent: account.admin_root
   weight: 100
 
-entity.ledger.collection:
-  title: 'Ledgers'
-  route_name: entity.ledger.collection
-  parent: account.admin_root
-  weight: 100
-
 entity.account_transfer_method.collection:
   title: 'Transfer method list'
   route_name: entity.account_transfer_method.collection

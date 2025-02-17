@@ -42,11 +42,11 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "langcode" = "langcode",
  *   },
  *   links = {
- *     "canonical" = "/admin/finance/ledger/{ledger}",
- *     "add-form" = "/admin/finance/ledger/add",
- *     "edit-form" = "/admin/finance/ledger/{ledger}/edit",
- *     "delete-form" = "/admin/finance/ledger/{ledger}/delete",
- *     "collection" = "/admin/finance/ledger",
+ *     "canonical" = "/admin/finance/account/{account}/ledgers/{ledger}",
+ *     "add-form" = "/admin/finance/account/{account}/ledgers/add",
+ *     "edit-form" = "/admin/finance/account/{account}/ledgers/{ledger}/edit",
+ *     "delete-form" = "/admin/finance/account/{account}/ledgers/{ledger}/delete",
+ *     "collection" = "/admin/finance/account/{account}/ledgers",
  *   },
  *   field_ui_base_route = "ledger.settings"
  * )
@@ -55,6 +55,15 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
 
 
   use EntityChangedTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function urlRouteParameters($rel) {
+    $uri_route_parameters = parent::urlRouteParameters($rel);
+    $uri_route_parameters['account'] = $this->getAccountId();
+    return $uri_route_parameters;
+  }
 
   /**
    * {@inheritdoc}

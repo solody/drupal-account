@@ -24,19 +24,25 @@ ledger.settings_tab:
 
 entity.ledger.canonical:
   route_name: entity.ledger.canonical
-  base_route: entity.ledger.canonical
+  parent_id: entity.account.collection
   title: 'View'
 
 entity.ledger.edit_form:
   route_name: entity.ledger.edit_form
-  base_route: entity.ledger.canonical
+  parent_id: entity.account.collection
   title: 'Edit'
 
 entity.ledger.delete_form:
   route_name:  entity.ledger.delete_form
-  base_route:  entity.ledger.canonical
-  title: Delete
+  parent_id: entity.account.collection
+  title: 'Delete'
   weight: 10
+
+entity.ledger.collection:
+  title: 'Ledgers'
+  route_name: entity.ledger.collection
+  base_route: entity.account.canonical
+  weight: 16
 
 # Transfer method routing definition
 account_transfer_method.settings_tab:
