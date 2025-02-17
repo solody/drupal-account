@@ -45,7 +45,7 @@ use Drupal\user\UserInterface;
  *   base_table = "account",
  *   admin_permission = "administer account entities",
  *   entity_keys = {
- *     "id" = "id",
+ *     "id" = "account_id",
  *     "bundle" = "type",
  *     "label" = "name",
  *     "uuid" = "uuid",

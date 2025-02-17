@@ -36,7 +36,7 @@ use Drupal\user\UserInterface;
  *   base_table = "account_transfer_method",
  *   admin_permission = "administer transfer method entities",
  *   entity_keys = {
- *     "id" = "id",
+ *     "id" = "transfer_method_id",
  *     "label" = "name",
  *     "uuid" = "uuid",
  *     "uid" = "uid",

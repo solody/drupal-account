@@ -36,7 +36,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   base_table = "withdraw",
  *   admin_permission = "administer withdraw entities",
  *   entity_keys = {
- *     "id" = "id",
+ *     "id" = "withdraw_id",
  *     "label" = "name",
  *     "uuid" = "uuid",
  *     "langcode" = "langcode",

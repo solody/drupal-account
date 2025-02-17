@@ -25,7 +25,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   config_prefix = "account_transfer_gateway",
  *   admin_permission = "administer site configuration",
  *   entity_keys = {
- *     "id" = "id",
+ *     "id" = "transfer_gateway_id",
  *     "label" = "label",
  *     "uuid" = "uuid"
  *   },

@@ -36,7 +36,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   base_table = "ledger",
  *   admin_permission = "administer ledger entities",
  *   entity_keys = {
- *     "id" = "id",
+ *     "id" = "ledger_id",
  *     "label" = "remarks",
  *     "uuid" = "uuid",
  *     "langcode" = "langcode",
