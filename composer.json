@@ -12,6 +12,6 @@
   },
   "require": {
     "drupal/dynamic_entity_reference": "^4.0",
-    "drupal/commerce": "3.0.x-dev"
+    "drupal/commerce": "^3.0"
   }
 }
