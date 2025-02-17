@@ -25,10 +25,16 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   config_prefix = "account_transfer_gateway",
  *   admin_permission = "administer site configuration",
  *   entity_keys = {
- *     "id" = "transfer_gateway_id",
+ *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid"
  *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "plugin",
+ *     "configuration",
+ *    },
  *   links = {
  *     "canonical" = "/admin/finance/account_transfer_gateway/{account_transfer_gateway}",
  *     "add-form" = "/admin/finance/account_transfer_gateway/add",

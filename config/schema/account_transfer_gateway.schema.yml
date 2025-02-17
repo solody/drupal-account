@@ -13,8 +13,6 @@ account.account_transfer_gateway.*:
       label: 'Plugin'
     configuration:
       type: account.account_transfer_gateway.plugin.[%parent.plugin]
-    uuid:
-      type: string
 
 account.account_transfer_gateway.plugin.manual:
   type: mapping

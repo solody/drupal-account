@@ -36,7 +36,7 @@ class AccountTypeForm extends EntityForm {
       '#required' => TRUE,
     ];
 
-    $form['id'] = [
+    $form['account_type_id'] = [
       '#type' => 'machine_name',
       '#default_value' => $account_type->id(),
       '#machine_name' => [

@@ -26,7 +26,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *   admin_permission = "administer site configuration",
  *   bundle_of = "account",
  *   entity_keys = {
- *     "id" = "account_type_id",
+ *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid"
  *   },

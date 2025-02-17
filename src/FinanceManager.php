@@ -227,7 +227,7 @@ class FinanceManager implements FinanceManagerInterface {
   public function getLastLedger(Account $financeAccount): ?LedgerInterface {
     $query = \Drupal::entityQuery('ledger')
       ->condition('account_id', $financeAccount->id())
-      ->sort('id', 'DESC')
+      ->sort('ledger_id', 'DESC')
       ->range(0, 1);
     $ids = $query->accessCheck(FALSE)->execute();
 
