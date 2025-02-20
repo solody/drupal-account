@@ -5,9 +5,12 @@ namespace Drupal\account\Plugin\TransferGateway;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\account\Entity\WithdrawInterface;
 use Drupal\account\Plugin\TransferGatewayBase;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\entity\BundleFieldDefinition;
 
 /**
+ * The default manual plugin.
+ *
  * @TransferGateway(
  *   id = "manual",
  *   label = @Translation("Manual")
@@ -15,18 +18,26 @@ use Drupal\entity\BundleFieldDefinition;
  */
 class Manual extends TransferGatewayBase {
 
+  use StringTranslationTrait;
+
   /**
    * {@inheritdoc}
    */
   public function buildFieldDefinitions() {
 
-    $fields['manual_remarks'] = BundleFieldDefinition::create('string')
-      ->setLabel(t('手动转帐方法说明'))
+    $fields['manual_remarks'] = BundleFieldDefinition::create('text_long')
+      ->setLabel($this->t('手动转帐方法说明'))
+      ->setDisplayOptions('form', [
+        'type' => 'text_textarea',
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('view', [
+        'type' => 'text_default',
         'label' => 'above',
-        'type' => 'string',
-        'weight' => -9,
-      ]);
+        'weight' => 10,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
     return $fields;
   }
@@ -49,13 +60,9 @@ class Manual extends TransferGatewayBase {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {}
 
   /**
-   * 转账
-   *
-   * @param \Drupal\account\Entity\WithdrawInterface $withdraw
-   *
-   * @return bool
+   * {@inheritdoc}
    */
-  public function transfer(WithdrawInterface $withdraw) {
+  public function transfer(WithdrawInterface $withdraw): bool {
     return TRUE;
   }
 

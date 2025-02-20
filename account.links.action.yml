@@ -10,8 +10,8 @@ entity.ledger.add_form:
   appears_on:
     - entity.ledger.collection
 
-entity.account_transfer_method.add_form:
-  route_name: entity.account_transfer_method.add_form
+entity.account_transfer_method.add_page:
+  route_name: entity.account_transfer_method.add_page
   title: 'Add account_transfer_method'
   appears_on:
     - entity.account_transfer_method.collection

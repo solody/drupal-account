@@ -14,9 +14,14 @@ use Drupal\account\Entity\WithdrawInterface;
 interface TransferGatewayInterface extends PluginWithFormsInterface, ConfigurableInterface, PluginFormInterface, BundlePluginInterface {
 
   /**
-   * 转账
-   * @param WithdrawInterface $withdraw
-   * @return mixed
+   * Do transfer.
+   *
+   * @param \Drupal\account\Entity\WithdrawInterface $withdraw
+   *   The withdrawal to action.
+   *
+   * @return bool
+   *   if Successful.
    */
-  public function transfer(WithdrawInterface $withdraw);
+  public function transfer(WithdrawInterface $withdraw): bool;
+
 }

@@ -45,7 +45,8 @@ use Drupal\user\UserInterface;
  *   },
  *   links = {
  *     "canonical" = "/admin/finance/account_transfer_method/{account_transfer_method}",
- *     "add-form" = "/admin/finance/account_transfer_method/add",
+ *     "add-form" = "/admin/finance/account_transfer_method/add/{type}",
+ *     "add-page" = "/admin/finance/account_transfer_method/add",
  *     "edit-form" = "/admin/finance/account_transfer_method/{account_transfer_method}/edit",
  *     "delete-form" = "/admin/finance/account_transfer_method/{account_transfer_method}/delete",
  *     "collection" = "/admin/finance/account_transfer_method",
@@ -170,21 +171,39 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
       ->setLabel(t('Owner'))
       ->setSetting('target_type', 'user')
       ->setSetting('handler', 'default')
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => 60,
+          'placeholder' => '',
+        ],
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('view', [
-        'label' => 'inline',
-        'type' => 'entity_reference_label',
-      ]);
+        'label' => 'above',
+        'type' => 'author',
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDefaultValue('')
-      ->setDisplayOptions('view', [
-        'label' => 'inline',
-        'type' => 'string',
-      ])
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
       ->setDisplayOptions('form', [
         'type' => 'string_textfield',
-      ]);
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'string',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['transfer_gateway'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Transfer gateway'))

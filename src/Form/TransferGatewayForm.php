@@ -4,7 +4,6 @@ namespace Drupal\account\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\account\Plugin\TransferGatewayManager;
 use Drupal\Component\Utility\Html;
 
 /**
@@ -20,9 +19,10 @@ class TransferGatewayForm extends EntityForm {
 
     /** @var \Drupal\account\Entity\TransferGatewayInterface $gateway */
     $gateway = $this->entity;
-    /** @var TransferGatewayManager $plugin_manager */
+    /** @var \Drupal\account\Plugin\TransferGatewayManager $plugin_manager */
     $plugin_manager = \Drupal::service('plugin.manager.account_transfer_gateway');
-    $plugins = array_column($plugin_manager->getDefinitions(), 'label', 'transfer_gateway_id');
+    $definitions = $plugin_manager->getDefinitions();
+    $plugins = array_column($plugin_manager->getDefinitions(), 'label', 'id');
     asort($plugins);
 
     // Use the first available plugin as the default value.
