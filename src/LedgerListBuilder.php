@@ -13,7 +13,6 @@ use Drupal\Core\Link;
  */
 class LedgerListBuilder extends EntityListBuilder {
 
-
   /**
    * {@inheritdoc}
    */
@@ -27,12 +26,15 @@ class LedgerListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\account\Entity\Ledger */
+    /** @var \Drupal\account\Entity\Ledger $entity */
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),
       'entity.ledger.edit_form',
-      ['ledger' => $entity->id()]
+      [
+        'ledger' => $entity->id(),
+        'account' => $entity->getAccountId(),
+      ]
     );
     return $row + parent::buildRow($entity);
   }
