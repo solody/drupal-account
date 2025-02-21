@@ -2,6 +2,7 @@
 
 namespace Drupal\account\Plugin;
 
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\entity\BundlePlugin\BundlePluginInterface;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
@@ -11,7 +12,7 @@ use Drupal\account\Entity\WithdrawInterface;
 /**
  * Defines an interface for Transfer gateway plugins.
  */
-interface TransferGatewayInterface extends PluginWithFormsInterface, ConfigurableInterface, PluginFormInterface, BundlePluginInterface {
+interface TransferGatewayInterface extends PluginWithFormsInterface, ConfigurableInterface, PluginFormInterface, BundlePluginInterface, ContainerFactoryPluginInterface {
 
   /**
    * Do transfer.

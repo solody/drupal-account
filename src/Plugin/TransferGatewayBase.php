@@ -2,10 +2,12 @@
 
 namespace Drupal\account\Plugin;
 
+use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\PluginWithFormsTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base class for Transfer gateway plugins.
@@ -14,6 +16,17 @@ abstract class TransferGatewayBase extends PluginBase implements TransferGateway
 
   use PluginWithFormsTrait;
   use StringTranslationTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+    );
+  }
 
   /**
    * {@inheritdoc}
