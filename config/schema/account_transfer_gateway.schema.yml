@@ -16,3 +16,4 @@ account.account_transfer_gateway.*:
 
 account.account_transfer_gateway.plugin.manual:
   type: mapping
+  label: 'Manual gateway config'
