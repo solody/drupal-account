@@ -21,7 +21,7 @@ class TransferGatewayForm extends EntityForm {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('plugin.manager.account.transfer_gateway'));
+    return new static($container->get('plugin.manager.account_transfer_gateway'));
   }
 
   /**
