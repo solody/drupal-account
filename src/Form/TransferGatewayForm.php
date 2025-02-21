@@ -2,14 +2,27 @@
 
 namespace Drupal\account\Form;
 
+use Drupal\account\Plugin\TransferGatewayManager;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class TransferGatewayForm.
+ * Form for editing transform gateway.
  */
 class TransferGatewayForm extends EntityForm {
+
+  public function __construct(
+    private readonly TransferGatewayManager $pluginManager,
+  ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('plugin.manager.account.transfer_gateway'));
+  }
 
   /**
    * {@inheritdoc}
@@ -19,10 +32,7 @@ class TransferGatewayForm extends EntityForm {
 
     /** @var \Drupal\account\Entity\TransferGatewayInterface $gateway */
     $gateway = $this->entity;
-    /** @var \Drupal\account\Plugin\TransferGatewayManager $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.account_transfer_gateway');
-    $definitions = $plugin_manager->getDefinitions();
-    $plugins = array_column($plugin_manager->getDefinitions(), 'label', 'id');
+    $plugins = array_column($this->pluginManager->getDefinitions(), 'label', 'id');
     asort($plugins);
 
     // Use the first available plugin as the default value.
@@ -33,10 +43,11 @@ class TransferGatewayForm extends EntityForm {
     }
     // The form state will have a plugin value if #ajax was used.
     $plugin = $form_state->getValue('plugin', $gateway->getPluginId());
-    // Pass the plugin configuration only if the plugin hasn't been changed via #ajax.
+    // Pass the plugin configuration only if
+    // the plugin hasn't been changed via #ajax.
     $plugin_configuration = $gateway->getPluginId() == $plugin ? $gateway->getPluginConfiguration() : [];
 
-    $wrapper_id = Html::getUniqueId('shipping-method-form');
+    $wrapper_id = Html::getUniqueId('transfer-gateway-form');
     $form['#tree'] = TRUE;
     $form['#prefix'] = '<div id="' . $wrapper_id . '">';
     $form['#suffix'] = '</div>';
@@ -51,7 +62,7 @@ class TransferGatewayForm extends EntityForm {
       '#required' => TRUE,
     ];
 
-    $form['transfer_gateway_id'] = [
+    $form['id'] = [
       '#type' => 'machine_name',
       '#default_value' => $gateway->id(),
       '#machine_name' => [

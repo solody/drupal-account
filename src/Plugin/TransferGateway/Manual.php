@@ -26,7 +26,7 @@ class Manual extends TransferGatewayBase {
   public function buildFieldDefinitions() {
 
     $fields['manual_remarks'] = BundleFieldDefinition::create('text_long')
-      ->setLabel($this->t('手动转帐方法说明'))
+      ->setLabel($this->t('Remarks'))
       ->setDisplayOptions('form', [
         'type' => 'text_textarea',
         'weight' => 10,

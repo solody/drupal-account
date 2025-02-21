@@ -63,13 +63,6 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
   /**
    * {@inheritdoc}
    */
-  public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
-    parent::preCreate($storage_controller, $values);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getName(): string {
     return $this->get('name')->value;
   }
@@ -166,7 +159,6 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Owner'))
       ->setSetting('target_type', 'user')
@@ -210,14 +202,40 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
       ->setDescription(t('The transfer gateway.'))
       ->setRequired(TRUE)
       ->setSetting('target_type', 'account_transfer_gateway')
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => 60,
+          'placeholder' => '',
+        ],
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('view', [
-        'label' => 'inline',
+        'label' => 'above',
         'type' => 'entity_reference_label',
-      ]);
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['is_default'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Default transfer method.'))
-      ->setDefaultValue(FALSE);
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+        'weight' => 15,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'boolean',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
