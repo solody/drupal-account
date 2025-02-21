@@ -2,7 +2,6 @@
 
 namespace Drupal\account\Plugin;
 
-use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\PluginWithFormsTrait;
