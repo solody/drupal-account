@@ -192,8 +192,6 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
 
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
-      ->setDefaultValue('')
-      ->setRequired(TRUE)
       ->setSetting('max_length', 255)
       ->setDisplayOptions('form', [
         'type' => 'string_textfield',

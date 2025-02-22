@@ -1,6 +1,10 @@
 access account administration pages:
   title: 'Access account administration pages'
 
+administer account_transfer_gateway:
+  title: 'Administer transfer gateway'
+  description: 'Maintain the instances of transfer gateway plugin.'
+  restrict access: true
 
 add account entities:
   title: 'Create new Account entities'

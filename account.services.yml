@@ -7,6 +7,6 @@ services:
     arguments: ['@entity_type.manager']
   account.withdraw_subscriber:
     class: Drupal\account\EventSubscriber\WithdrawSubscriber
-    arguments: ['@account.finance_manager']
+    arguments: ['@account.finance_manager', '@commerce_price.currency_formatter']
     tags:
       - { name: event_subscriber }

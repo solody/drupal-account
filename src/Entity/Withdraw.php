@@ -139,7 +139,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
     parent::preSave($storage);
     if ($this->get('name')->isEmpty()) {
       /** @var \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter */
-      $currency_formatter = \Drupal::service('commerce.currency.formatter');
+      $currency_formatter = \Drupal::service('commerce_price.currency_formatter');
       $this->setName('Account [' . $this->getAccount()->getName() . '] withdraw ' . $currency_formatter->format(
           $this->getAmount()->getNumber(),
           $this->getAmount()->getCurrencyCode()

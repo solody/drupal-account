@@ -23,7 +23,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     },
  *   },
  *   config_prefix = "account_transfer_gateway",
- *   admin_permission = "administer site configuration",
+ *   admin_permission = "administer account_transfer_gateway",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",

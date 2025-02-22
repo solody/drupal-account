@@ -22,9 +22,11 @@ function account_install() {
     'view account entities',
     'view ledger entities',
     'edit ledger entities',
+    'add withdraw entities',
     'view withdraw entities',
     'edit withdraw entities',
-    'apply withdraw for own finance account'
+    'apply withdraw for own finance account',
+    'administer account_transfer_gateway'
   ]);
 }
 
