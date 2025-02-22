@@ -3,6 +3,7 @@
 namespace Drupal\account\Entity;
 
 use Drupal\commerce_price\Price;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -134,6 +135,22 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   /**
    * {@inheritdoc}
    */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+    if ($this->get('name')->isEmpty()) {
+      /** @var \CommerceGuys\Intl\Formatter\CurrencyFormatterInterface $currency_formatter */
+      $currency_formatter = \Drupal::service('commerce.currency.formatter');
+      $this->setName('Account [' . $this->getAccount()->getName() . '] withdraw ' . $currency_formatter->format(
+          $this->getAmount()->getNumber(),
+          $this->getAmount()->getCurrencyCode()
+        )
+      );
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
@@ -213,6 +230,7 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
     $fields['state'] = BaseFieldDefinition::create('state')
       ->setLabel(t('Process status'))
       ->setRequired(TRUE)
+      ->setDefaultValue('draft')
       ->setSetting('max_length', 255)
       ->setDisplayOptions('view', [
         'label' => 'hidden',

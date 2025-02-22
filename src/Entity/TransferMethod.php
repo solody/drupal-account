@@ -152,6 +152,16 @@ class TransferMethod extends ContentEntityBase implements TransferMethodInterfac
 
   /**
    * {@inheritdoc}
+   */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+    if ($this->get('name')->isEmpty()) {
+      $this->setName('Alipay transfer method for ' . $this->getOwner()->getDisplayName());
+    }
+  }
+
+  /**
+   * {@inheritdoc}
    *
    * There are buildFieldDefinitions
    * in bundle_plugin_type = "account_transfer_gateway".
