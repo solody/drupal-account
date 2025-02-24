@@ -47,17 +47,22 @@ class FinanceManager implements FinanceManagerInterface {
       }
     }
     if ($is_get_lock) {
-      $query = \Drupal::entityQuery('account')
-        ->condition('uid', $user->id())
-        ->condition('type', $type)
-        ->condition('currency', $currency_code);
-      $ids = $query->accessCheck(FALSE)->execute();
+      try {
+        $query = \Drupal::entityQuery('account')
+          ->condition('uid', $user->id())
+          ->condition('type', $type)
+          ->condition('currency', $currency_code);
+        $ids = $query->accessCheck(FALSE)->execute();
 
-      if (!empty($ids)) {
-        return Account::load(array_pop($ids));
+        if (!empty($ids)) {
+          return Account::load(array_pop($ids));
+        }
+        else {
+          return $this->createAccount($user, $type, $currency_code);
+        }
       }
-      else {
-        return $this->createAccount($user, $type, $currency_code);
+      finally {
+        $lock->release($operationID);
       }
     }
     else {
