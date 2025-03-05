@@ -19,6 +19,5 @@ account.account_type.*:
       label: 'Maximum withdraw limitation'
 
 action.configuration.account_transfer_withdraw:
-  type: mapping
+  type: action_configuration_default
   label: 'Action plugin config of account_transfer_withdraw'
-  mapping:
