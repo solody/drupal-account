@@ -207,8 +207,8 @@ class FinanceManager implements FinanceManagerInterface {
   /**
    * Get account total income.
    */
-  public function getAccountTotal(FinanceAccountInterface $account, ?int $start_time = NULL, ?int $end_time = NULL): array {
-    $ledgers = $this->getLedgers($account, $start_time, $end_time);
+  public function getAccountTotal(FinanceAccountInterface $account, array $conditions = [], ?int $start_time = NULL, ?int $end_time = NULL): array {
+    $ledgers = $this->getLedgers($account, $conditions, $start_time, $end_time);
     $total_debit = new Price('0.00', $account->getCurrency());
     $total_credit = new Price('0.00', $account->getCurrency());
     foreach ($ledgers as $ledger) {
@@ -336,9 +336,17 @@ class FinanceManager implements FinanceManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getLedgers(Account $account, ?int $start_time = NULL, ?int $end_time = NULL): array {
+  public function getLedgers(Account $account, array $conditions = [], ?int $start_time = NULL, ?int $end_time = NULL): array {
     $query = \Drupal::entityQuery('ledger')
       ->condition('account_id', $account->id());
+    foreach ($conditions as $key => $condition) {
+      if (is_array($condition)) {
+        $query->condition($key, $condition[0], $condition[1]);
+      }
+      else {
+        $query->condition($key, $condition);
+      }
+    }
     if ($start_time) {
       $query->condition('created', $start_time, '>=');
     }

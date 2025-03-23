@@ -82,7 +82,7 @@ interface FinanceManagerInterface {
   /**
    * Get account total income.
    */
-  public function getAccountTotal(FinanceAccountInterface $account, ?int $start_time = NULL, ?int $end_time = NULL): array;
+  public function getAccountTotal(FinanceAccountInterface $account, array $conditions = [], ?int $start_time = NULL, ?int $end_time = NULL): array;
 
   /**
    * Get last ledger of the given account.
@@ -155,15 +155,17 @@ interface FinanceManagerInterface {
    *
    * @param \Drupal\account\Entity\Account $account
    *   Which account.
-   * @param int|null $startTime
-   *   The start timestamp.
-   * @param int|null $endTime
-   *   The end timestamp.
+   * @param array $conditions
+   *   Conditions to query.
+   * @param int|null $start_time
+   *   The start time.
+   * @param int|null $end_time
+   *   The end time.
    *
    * @return \Drupal\account\Entity\LedgerInterface[]
    *   Entity of ledgers.
    */
-  public function getLedgers(Account $account, ?int $start_time = NULL, ?int $end_time = NULL): array;
+  public function getLedgers(Account $account, array $conditions = [], ?int $start_time = NULL, ?int $end_time = NULL): array;
 
   /**
    * 申请提现.
