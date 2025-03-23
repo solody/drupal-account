@@ -21,7 +21,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\account\LedgerListBuilder",
  *     "views_data" = "Drupal\account\Entity\LedgerViewsData",
- *
  *     "form" = {
  *       "default" = "Drupal\account\Form\LedgerForm",
  *       "add" = "Drupal\account\Form\LedgerForm",
@@ -222,6 +221,10 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
 
     $fields['source'] = BaseFieldDefinition::create('dynamic_entity_reference')
       ->setLabel(t('Accounting source'))
+      ->setSettings([
+        'exclude_entity_types' => FALSE,
+        'entity_type_ids' => [],
+      ])
       ->setDisplayOptions('view', [
         'type' => 'dynamic_entity_reference_label',
       ]);
