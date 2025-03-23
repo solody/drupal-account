@@ -8,6 +8,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 
 /**
  * Defines the Ledger entity.
@@ -221,10 +222,7 @@ class Ledger extends ContentEntityBase implements LedgerInterface {
 
     $fields['source'] = BaseFieldDefinition::create('dynamic_entity_reference')
       ->setLabel(t('Accounting source'))
-      ->setSettings([
-        'exclude_entity_types' => FALSE,
-        'entity_type_ids' => [],
-      ])
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
       ->setDisplayOptions('view', [
         'type' => 'dynamic_entity_reference_label',
       ]);
