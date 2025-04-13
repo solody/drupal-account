@@ -62,8 +62,7 @@ class Manual extends TransferGatewayBase {
   /**
    * {@inheritdoc}
    */
-  public function transfer(WithdrawInterface $withdraw): bool {
-    return TRUE;
+  public function transfer(WithdrawInterface $withdraw) {
   }
 
 }

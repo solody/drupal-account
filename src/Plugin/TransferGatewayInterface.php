@@ -23,6 +23,6 @@ interface TransferGatewayInterface extends PluginWithFormsInterface, Configurabl
    * @return bool
    *   if Successful.
    */
-  public function transfer(WithdrawInterface $withdraw): bool;
+  public function transfer(WithdrawInterface $withdraw);
 
 }

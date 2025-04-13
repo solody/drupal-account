@@ -32,6 +32,7 @@ class WithdrawSubscriber implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents() {
     $events['withdraw.transfer.pre_transition'] = ['withdrawTransferPreTransition'];
+    $events['withdraw.retry.pre_transition'] = ['withdrawTransferPreTransition'];
     $events['withdraw.cancel.post_transition'] = ['withdrawCancelPostTransition'];
 
     return $events;
@@ -75,7 +76,6 @@ class WithdrawSubscriber implements EventSubscriberInterface {
                 '@message' => $exception->getMessage(),
               ])
             );
-            throw $exception;
           }
         }
       }
