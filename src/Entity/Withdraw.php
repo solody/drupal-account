@@ -135,6 +135,13 @@ class Withdraw extends ContentEntityBase implements WithdrawInterface {
   /**
    * {@inheritdoc}
    */
+  public function getState() {
+    return $this->get('state')->first();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
     if ($this->get('name')->isEmpty()) {

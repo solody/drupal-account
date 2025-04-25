@@ -38,6 +38,8 @@ interface FinanceManagerInterface {
    *   The user.
    * @param string $type
    *   The account type.
+   * @param string $currency_code
+   *   The currency of this account.
    *
    * @return \Drupal\account\Entity\AccountInterface|null
    *   The account.
@@ -47,9 +49,9 @@ interface FinanceManagerInterface {
   /**
    * 增加记账记录.
    *
-   * @param \Drupal\account\Entity\Account $financeAccount
+   * @param \Drupal\account\Entity\Account $finance_account
    *   The account.
-   * @param string $amountType
+   * @param string $amount_ype
    *   Debit or credit.
    * @param \Drupal\commerce_price\Price $amount
    *   The amount.
@@ -62,8 +64,8 @@ interface FinanceManagerInterface {
    *   The saved ledger.
    */
   public function createLedger(
-    Account $financeAccount,
-    string $amountType,
+    Account $finance_account,
+    string $amount_ype,
     Price $amount,
     string $remarks = '',
     ?EntityInterface $source = NULL,
@@ -174,7 +176,7 @@ interface FinanceManagerInterface {
    *   Which account.
    * @param \Drupal\commerce_price\Price $amount
    *   How much.
-   * @param \Drupal\account\Entity\TransferMethod $transferMethod
+   * @param \Drupal\account\Entity\TransferMethod $transfer_method
    *   The transfer method.
    * @param string $remarks
    *   The remarks.
@@ -185,9 +187,17 @@ interface FinanceManagerInterface {
   public function applyWithdraw(
     Account $account,
     Price $amount,
-    TransferMethod $transferMethod,
+    TransferMethod $transfer_method,
     string $remarks = '',
   ): WithdrawInterface;
+
+  /**
+   * Execute a withdraw.
+   *
+   * @param \Drupal\account\Entity\WithdrawInterface $withdraw
+   *   The withdraw to execute.
+   */
+  public function executeWithdraw(WithdrawInterface $withdraw): void;
 
   /**
    * 检查是否有正在处理的提现单.

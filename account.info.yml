@@ -17,3 +17,4 @@ dependencies:
   - 'entity:entity'
   - 'simple_oauth:simple_oauth'
   - 'state_machine:state_machine'
+  - 'lock_utils:lock_utils'

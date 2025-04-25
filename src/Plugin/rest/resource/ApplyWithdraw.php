@@ -2,6 +2,8 @@
 
 namespace Drupal\account\Plugin\rest\resource;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Symfony\Component\Routing\Route;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\account\Entity\Account;
@@ -26,19 +28,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class ApplyWithdraw extends ResourceBase {
 
-  /**
-   * A current user instance.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected $currentUser;
-
-  /**
-   * Drupal\account\FinanceManagerInterface definition.
-   *
-   * @var \Drupal\account\FinanceManagerInterface
-   */
-  protected $financeManager;
+  use StringTranslationTrait;
 
   /**
    * Constructs a new ApplyWithdraw object.
@@ -53,8 +43,10 @@ class ApplyWithdraw extends ResourceBase {
    *   The available serialization formats.
    * @param \Psr\Log\LoggerInterface $logger
    *   A logger instance.
-   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
-   *   A current user instance.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user instance.
+   * @param \Drupal\account\FinanceManagerInterface $financeManager
+   *   The finance manager service.
    */
   public function __construct(
     array $configuration,
@@ -62,13 +54,10 @@ class ApplyWithdraw extends ResourceBase {
     $plugin_definition,
     array $serializer_formats,
     LoggerInterface $logger,
-    AccountProxyInterface $current_user,
-    FinanceManagerInterface $financeManager,
+    private readonly AccountProxyInterface $currentUser,
+    private readonly FinanceManagerInterface $financeManager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
-
-    $this->currentUser = $current_user;
-    $this->financeManager = $financeManager;
   }
 
   /**
@@ -90,19 +79,21 @@ class ApplyWithdraw extends ResourceBase {
    * Responds to POST requests.
    *
    * @param \Drupal\account\Entity\Account $account
+   *   The account entity.
+   * @param array $data
+   *   The posted data.
    *
    * @return \Drupal\rest\ModifiedResourceResponse
    *   The HTTP response object.
    *
-   * @throws \Exception
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function post(Account $account, $data) {
+  public function post(Account $account, array $data): ModifiedResourceResponse {
 
-    // You must to implement the logic of your REST Resource here.
-    // Use current user after pass authentication to validate access.
     if (!$this->currentUser->hasPermission('apply withdraw for own finance account') ||
          $account->getOwnerId() !== $this->currentUser->id()) {
-      throw new AccessDeniedHttpException('当前用户没有权限对些账户进行申请提现');
+      throw new AccessDeniedHttpException('You do not have permission to apply withdraw for this account.');
     }
 
     $transfer_method = NULL;
@@ -112,15 +103,20 @@ class ApplyWithdraw extends ResourceBase {
       $transfer_method = $methodStorage->load($data['transfer_method']);
     }
     else {
-      // 如果没有提供transfer_method，尝试查找默认的转账方法.
+      // Try to load the default transfer method.
       $transfer_method = $methodStorage->loadDefault($account->getOwner()->id());
     }
     if (!$transfer_method) {
-      throw new BadRequestHttpException('找不到支付方法：【' . $data['transfer_method'] . '】');
+      throw new BadRequestHttpException("'Transfer method {$data['transfer_method']} can not be found.'");
     }
 
     try {
-      $withdraw = $this->financeManager->applyWithdraw($account, new Price($data['amount'], $account->getCurrencyCode()), $transfer_method, $data['remarks']);
+      $withdraw = $this->financeManager->applyWithdraw(
+        $account,
+        new Price($data['amount'], $account->getCurrency()),
+        $transfer_method,
+        $data['remarks'],
+      );
     }
     catch (\Exception $e) {
       throw new BadRequestHttpException($e->getMessage(), $e);
@@ -132,7 +128,7 @@ class ApplyWithdraw extends ResourceBase {
   /**
    * {@inheritdoc}
    */
-  protected function getBaseRoute($canonical_path, $method) {
+  protected function getBaseRoute($canonical_path, $method): Route {
     $route = parent::getBaseRoute($canonical_path, $method);
     $parameters = $route->getOption('parameters') ?: [];
     $parameters['account']['type'] = 'entity:account';

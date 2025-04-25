@@ -1,17 +1,18 @@
 {
-  "name": "drupal/account",
-  "type": "drupal-module",
-  "description": "Provides finance accounting functionality.",
-  "keywords": ["Drupal"],
-  "license": "GPL-2.0+",
-  "homepage": "https://www.drupal.org/project/account",
-  "minimum-stability": "dev",
-  "support": {
-    "issues": "https://www.drupal.org/project/issues/account",
-    "source": "http://cgit.drupalcode.org/account"
-  },
-  "require": {
-    "drupal/dynamic_entity_reference": "^4.0",
-    "drupal/commerce": "^3.0"
-  }
+    "name": "drupal/account",
+    "type": "drupal-module",
+    "description": "Provides finance accounting functionality.",
+    "keywords": ["Drupal"],
+    "license": "GPL-2.0+",
+    "homepage": "https://www.drupal.org/project/account",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/account",
+        "source": "http://cgit.drupalcode.org/account"
+    },
+    "require": {
+        "drupal/dynamic_entity_reference": "^4.0",
+        "drupal/commerce": "^3.0",
+        "drupal/lock_utils": "^1.0"
+    }
 }

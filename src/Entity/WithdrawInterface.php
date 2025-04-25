@@ -90,4 +90,12 @@ interface WithdrawInterface extends ContentEntityInterface, EntityChangedInterfa
    */
   public function getTransferMethod(): TransferMethodInterface;
 
+  /**
+   * Gets the order state.
+   *
+   * @return \Drupal\state_machine\Plugin\Field\FieldType\StateItemInterface
+   *   The order state.
+   */
+  public function getState();
+
 }

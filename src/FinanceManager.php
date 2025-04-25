@@ -4,6 +4,7 @@ namespace Drupal\account;
 
 use Drupal\account\Entity\LedgerInterface;
 use Drupal\account\Entity\WithdrawInterface;
+use Drupal\account\Plugin\TransferGatewayInterface;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -14,11 +15,16 @@ use Drupal\account\Entity\Ledger;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\account\Entity\TransferMethod;
 use Drupal\account\Entity\Withdraw;
+use Drupal\account\Entity\TransferGatewayInterface as TransferGatewayEntityInterface;
+use Drupal\account\Entity\TransferMethodInterface;
+use Drupal\lock_utils\LockOperationTrait;
 
 /**
  * The FinanceManager service.
  */
 class FinanceManager implements FinanceManagerInterface {
+
+  use LockOperationTrait;
 
   /**
    * Drupal\Core\Entity\EntityTypeManagerInterface definition.
@@ -102,8 +108,8 @@ class FinanceManager implements FinanceManagerInterface {
    * @throws \Exception
    */
   public function createLedger(
-    Account $financeAccount,
-    string $amountType,
+    Account $finance_account,
+    string $amount_ype,
     Price $amount,
     string $remarks = '',
     ?EntityInterface $source = NULL,
@@ -111,64 +117,43 @@ class FinanceManager implements FinanceManagerInterface {
 
     \Drupal::moduleHandler()->alter('account_ledger_remarks', $remarks, $source);
 
-    // 使用操作锁，防止并发操作造成数据计算错误.
-    $lock = \Drupal::lock();
-    $operationID = 'finance__create_ledger__' . $financeAccount->id();
-    $is_get_lock = $lock->acquire($operationID);
-    if (!$is_get_lock) {
-      if (!$lock->wait($operationID, 30)) {
-        $is_get_lock = $lock->acquire($operationID);
-      }
-    }
-    if ($is_get_lock) {
-
-      try {
-
-        // 计算余额.
-        $balance = new Price('0.00', $financeAccount->getCurrency());
-        $last_ledger = $this->getLastLedger($financeAccount);
-        if ($last_ledger) {
-          $balance = $last_ledger->getBalance();
-        }
-
-        if ($amountType === LedgerInterface::AMOUNT_TYPE_DEBIT) {
-          $balance = $balance->add($amount);
-        }
-        elseif ($amountType === LedgerInterface::AMOUNT_TYPE_CREDIT) {
-          $balance = $balance->subtract($amount);
-        }
-
-        $create_data = [
-          'account_id' => $financeAccount,
-          'amount_type' => $amountType,
-          'amount' => $amount,
-          'balance' => $balance,
-          'remarks' => $remarks,
-        ];
-
-        if ($source) {
-          $create_data['source'] = $source;
-        }
-
-        $ledger = Ledger::create($create_data);
-        $ledger->save();
-
-        // 更新账户统计.
-        $this->updateAccountStatistics($financeAccount);
-
-        $lock->release($operationID);
-
-        return $ledger;
-      }
-      catch (\Exception $exception) {
-        $lock->release($operationID);
-        throw $exception;
+    $operationID = 'finance__create_ledger__' . $finance_account->id();
+    return $this->lockDo($operationID, function () use ($finance_account, $amount_ype, $amount, $remarks, $source) {
+      // 计算余额.
+      $balance = new Price('0.00', $finance_account->getCurrency());
+      $last_ledger = $this->getLastLedger($finance_account);
+      if ($last_ledger) {
+        $balance = $last_ledger->getBalance();
       }
 
-    }
-    else {
-      throw new \Exception('未能取得操作[' . $operationID . ']的锁，无法执行记账操作。');
-    }
+      if ($amount_ype === LedgerInterface::AMOUNT_TYPE_DEBIT) {
+        $balance = $balance->add($amount);
+      }
+      elseif ($amount_ype === LedgerInterface::AMOUNT_TYPE_CREDIT) {
+        $balance = $balance->subtract($amount);
+      }
+
+      $create_data = [
+        'account_id' => $finance_account,
+        'amount_type' => $amount_ype,
+        'amount' => $amount,
+        'balance' => $balance,
+        'remarks' => $remarks,
+      ];
+
+      if ($source) {
+        $create_data['source'] = $source;
+      }
+
+      $ledger = Ledger::create($create_data);
+      $ledger->save();
+
+      // 更新账户统计.
+      $this->updateAccountStatistics($finance_account);
+
+      return $ledger;
+    });
+
   }
 
   /**
@@ -256,9 +241,7 @@ class FinanceManager implements FinanceManagerInterface {
     string $message = '',
     ?EntityInterface $source = NULL,
   ): void {
-    // 记录出账.
     $this->createLedger($form, LedgerInterface::AMOUNT_TYPE_CREDIT, $amount, $message, $source);
-    // 记录进账.
     $this->createLedger($to, LedgerInterface::AMOUNT_TYPE_DEBIT, $amount, $message, $source);
   }
 
@@ -269,7 +252,7 @@ class FinanceManager implements FinanceManagerInterface {
     $query = \Drupal::entityQuery('withdraw')
       ->condition('state', ['draft', 'processing'], 'IN')
       ->condition('account_id', $account->id());
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
 
     $price = new Price('0.00', $account->getCurrency());
     if (count($ids)) {
@@ -291,7 +274,7 @@ class FinanceManager implements FinanceManagerInterface {
     $query = \Drupal::entityQuery('withdraw')
       ->condition('state', 'completed')
       ->condition('account_id', $account->id());
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
 
     $price = new Price('0.00', $account->getCurrency());
     if (count($ids)) {
@@ -371,49 +354,76 @@ class FinanceManager implements FinanceManagerInterface {
   public function applyWithdraw(
     Account $account,
     Price $amount,
-    TransferMethod $transferMethod,
+    TransferMethod $transfer_method,
     string $remarks = '',
   ): WithdrawInterface {
-    // 检查提现限制.
-    $account_type = AccountType::load($account->bundle());
-    if ((boolean) $account_type->getMaximumWithdraw() && (float) $amount->getNumber() > (float) $account_type->getMaximumWithdraw()) {
-      throw new \Exception('申请金额超过了最大限额');
-    }
-    if ((boolean) $account_type->getMinimumWithdraw() && (float) $amount->getNumber() < $account_type->getMinimumWithdraw()) {
-      throw new \Exception('申请金额没有达到最小限额');
-    }
 
-    $available_balance = $this->computeAvailableBalance($account);
-    if ($amount->greaterThan($available_balance)) {
-      throw new \Exception('申请金额超过了可提余额');
-    }
+    $operation_id = 'finance__apply_withdraw__' . $account->id();
+    return $this->lockDo($operation_id, function () use ($account, $amount, $transfer_method, $remarks) {
+      // Check if the amount is valid.
+      $account_type = AccountType::load($account->bundle());
+      if ($account_type->getMaximumWithdraw() > 0 && (float) $amount->getNumber() > $account_type->getMaximumWithdraw()) {
+        throw new \Exception('Apply amount exceeds maximum limit');
+      }
+      if ($account_type->getMinimumWithdraw() > 0 && (float) $amount->getNumber() < $account_type->getMinimumWithdraw()) {
+        throw new \Exception('Apply amount is less than minimum limit');
+      }
 
-    // 检查是否有提现单正在处理.
-    if ($this->hasProcessingWithdraw($account)) {
-      throw new \Exception('您的账户已经有提现申请正在处理，请等待处理完毕，再申请新的提现。');
-    }
+      $available_balance = $this->computeAvailableBalance($account);
+      if ($amount->greaterThan($available_balance)) {
+        throw new \Exception('Available balance is not enough to withdraw.');
+      }
 
-    // 创建提现单.
-    /** @var \Drupal\account\Entity\WithdrawInterface $withdraw */
-    $withdraw = Withdraw::create([
-      'account_id' => $account,
-      'amount' => $amount,
-      'transfer_method' => $transferMethod,
-      'state' => 'draft',
-      'remarks' => $remarks,
-      'name' => $account->getOwner()->getDisplayName() . ' 的 ' . $account->getName() . '的提现申请',
-    ]);
-    $withdraw->save();
+      // Withdraw must be applied one by one.
+      if ($this->hasProcessingWithdraw($account)) {
+        throw new \Exception('There is a processing withdraw, cannot be applied again before it is done.');
+      }
 
-    $this->createLedger(
-      $withdraw->getAccount(),
-      LedgerInterface::AMOUNT_TYPE_CREDIT,
-      $withdraw->getAmount(),
-      '提现单 [' . $withdraw->id() . '] 提现支出' . $withdraw->getAmount()->getCurrencyCode() . $withdraw->getAmount()->getNumber(),
-      $withdraw
-    );
+      // Create a new withdraw.
+      /** @var \Drupal\account\Entity\WithdrawInterface $withdraw */
+      $withdraw = Withdraw::create([
+        'account_id' => $account,
+        'amount' => $amount,
+        'transfer_method' => $transfer_method,
+        'state' => 'draft',
+        'remarks' => $remarks,
+        'name' => "Withdraw of {$account->getName()} of {$account->getOwner()->getDisplayName()}",
+      ]);
+      $withdraw->save();
 
-    return $withdraw;
+      return $withdraw;
+    });
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function executeWithdraw(WithdrawInterface $withdraw): void {
+    $operation_id = 'finance__execute_withdraw__' . $withdraw->id();
+    $this->lockDo($operation_id, function () use ($withdraw) {
+      $available_balance = $this->computeAvailableBalance($withdraw->getAccount());
+      if ($available_balance->lessThan($withdraw->getAmount())) {
+        throw new \Exception('Available balance is not enough to withdraw.');
+      }
+      $transfer_method = $withdraw->getTransferMethod();
+      if ($transfer_method instanceof TransferMethodInterface) {
+        $gateway = $transfer_method->getTransferGateway();
+        if ($gateway instanceof TransferGatewayEntityInterface) {
+          $plugin = $gateway->getPlugin();
+          if ($plugin instanceof TransferGatewayInterface) {
+            $plugin->transfer($withdraw);
+            $this->createLedger(
+              $withdraw->getAccount(),
+              LedgerInterface::AMOUNT_TYPE_CREDIT,
+              $withdraw->getAmount(),
+              'Withdraw',
+              $withdraw
+            );
+          }
+        }
+      }
+    });
   }
 
   /**
@@ -423,7 +433,7 @@ class FinanceManager implements FinanceManagerInterface {
     $query = \Drupal::entityQuery('withdraw')
       ->condition('account_id', $account->id())
       ->condition('state', ['draft', 'processing'], 'IN');
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
 
     if (count($ids)) {
       return TRUE;
@@ -439,7 +449,7 @@ class FinanceManager implements FinanceManagerInterface {
   public function getAccountsByType(string $type): array {
     $query = \Drupal::entityQuery('account')
       ->condition('type', $type);
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
     if ($ids) {
       return Account::loadMultiple($ids);
     }

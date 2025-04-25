@@ -3,10 +3,6 @@
 namespace Drupal\account\EventSubscriber;
 
 use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
-use Drupal\account\Entity\LedgerInterface;
-use Drupal\account\Entity\TransferGatewayInterface as TransferGatewayEntityInterface;
-use Drupal\account\Plugin\TransferGatewayInterface;
-use Drupal\account\Entity\TransferMethodInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\state_machine\Event\WorkflowTransitionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -33,7 +29,8 @@ class WithdrawSubscriber implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
     $events['withdraw.transfer.pre_transition'] = ['withdrawTransferPreTransition'];
     $events['withdraw.retry.pre_transition'] = ['withdrawTransferPreTransition'];
-    $events['withdraw.cancel.post_transition'] = ['withdrawCancelPostTransition'];
+    $events['withdraw.transfer.post_transition'] = ['withdrawTransferPostTransition'];
+    $events['withdraw.retry.post_transition'] = ['withdrawTransferPostTransition'];
 
     return $events;
   }
@@ -49,65 +46,47 @@ class WithdrawSubscriber implements EventSubscriberInterface {
    *
    * @throws \Exception
    */
-  public function withdrawTransferPreTransition(WorkflowTransitionEvent $event) {
+  public function withdrawTransferPreTransition(WorkflowTransitionEvent $event): void {
     /** @var \Drupal\account\Entity\Withdraw $withdraw */
     $withdraw = $event->getEntity();
-
     $transfer_method = $withdraw->getTransferMethod();
-    if ($transfer_method instanceof TransferMethodInterface) {
-      $gateway = $transfer_method->getTransferGateway();
-      if ($gateway instanceof TransferGatewayEntityInterface) {
-        $plugin = $gateway->getPlugin();
-        if ($plugin instanceof TransferGatewayInterface) {
-          try {
-            $plugin->transfer($withdraw);
-            \Drupal::messenger()->addMessage(
-              $this->t('Withdraw @withdraw transfer successful by gateway @gateway.', [
-                '@withdraw' => $withdraw->id(),
-                '@gateway' => $plugin->getPluginId(),
-              ])
-            );
-          }
-          catch (\Exception $exception) {
-            \Drupal::messenger()->addError(
-              $this->t('Withdraw @withdraw transfer fails by gateway @gateway: @message', [
-                '@withdraw' => $withdraw->id(),
-                '@gateway' => $plugin->getPluginId(),
-                '@message' => $exception->getMessage(),
-              ])
-            );
-          }
-        }
-      }
+    $gateway = $transfer_method->getTransferGateway();
+    $plugin = $gateway->getPlugin();
+    try {
+      $this->accountFinanceManager->executeWithdraw($withdraw);
+      \Drupal::messenger()->addMessage(
+        $this->t('Withdraw @withdraw transfer successful by gateway @gateway.', [
+          '@withdraw' => $withdraw->id(),
+          '@gateway' => $plugin->getPluginId(),
+        ])
+      );
+    }
+    catch (\Exception $exception) {
+      \Drupal::messenger()->addError(
+        $this->t('Withdraw @withdraw transfer fails by gateway @gateway: @message', [
+          '@withdraw' => $withdraw->id(),
+          '@gateway' => $plugin->getPluginId(),
+          '@message' => $exception->getMessage(),
+        ])
+      );
+      // Prevent the transition.
+      throw $exception;
     }
   }
 
   /**
-   * Action after canceled the withdraw, refund amount to account.
-   *
-   * This method is called whenever the withdraw.cancel.post_transition
-   * event is dispatched.
+   * Action after transfer the withdraw.
    *
    * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
    *   The event.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function withdrawCancelPostTransition(WorkflowTransitionEvent $event) {
+  public function withdrawTransferPostTransition(WorkflowTransitionEvent $event): void {
     /** @var \Drupal\account\Entity\Withdraw $withdraw */
     $withdraw = $event->getEntity();
-
-    $this->accountFinanceManager->createLedger(
-      $withdraw->getAccount(),
-      LedgerInterface::AMOUNT_TYPE_DEBIT,
-      $withdraw->getAmount(),
-      $this->t('Withdraw @withdraw is rejected, refund amount @amount.', [
-        '@withdraw' => $withdraw->id(),
-        '@amount' => $this->currencyFormatter->format(
-          $withdraw->getAmount()->getNumber(),
-          $withdraw->getAmount()->getCurrencyCode()
-        ),
-      ]),
-      $withdraw
-    );
+    $withdraw->getState()->applyTransitionById('complete');
+    $withdraw->save();
   }
 
 }
