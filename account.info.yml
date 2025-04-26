@@ -18,3 +18,5 @@ dependencies:
   - 'simple_oauth:simple_oauth'
   - 'state_machine:state_machine'
   - 'lock_utils:lock_utils'
+'interface translation project': account
+'interface translation server pattern': translations/%project.%language.po

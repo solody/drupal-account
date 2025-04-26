@@ -35,14 +35,14 @@ entity.account.collection:
   weight: 100
 
 entity.account_transfer_method.collection:
-  title: 'Transfer method list'
+  title: 'Transfer methods'
   route_name: entity.account_transfer_method.collection
   description: 'Manage transfer methods that created by users, each transfer method configured in different transfer account information.'
   parent: account.admin_root
   weight: 100
 
 entity.withdraw.collection:
-  title: 'Withdraw list'
+  title: 'Withdraws'
   route_name: entity.withdraw.collection
   parent: account.admin_root
   weight: 100

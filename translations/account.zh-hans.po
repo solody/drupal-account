@@ -1,0 +1,23 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: task (1.x-dev)\n"
+"POT-Creation-Date: 2024-08-25 16:06+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Language-Team: Chinese, Simplified\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+
+msgid "Finance"
+msgstr "财务"
+msgid "Accounts"
+msgstr "账户"
+msgid "Withdraws"
+msgstr "提现"
+msgid "Transfer methods"
+msgstr "转账方式"
+
+msgid "Add Account"
+msgstr "添加账户"
