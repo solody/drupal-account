@@ -2,7 +2,7 @@ account.admin_root:
   title: 'Finance'
   route_name: 'account.admin'
   parent: 'system.admin'
-  weight: -10
+  weight: -8
 
 
 account.admin_root.config:
