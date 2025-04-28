@@ -2,6 +2,7 @@
 
 namespace Drupal\account;
 
+use CommerceGuys\Intl\Formatter\CurrencyFormatterInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -32,6 +33,7 @@ class LedgerListBuilder extends EntityListBuilder {
     EntityTypeInterface $entity_type,
     EntityStorageInterface $storage,
     protected RouteMatchInterface $routeMatch,
+    protected CurrencyFormatterInterface $currencyFormatter,
   ) {
     parent::__construct($entity_type, $storage);
   }
@@ -44,6 +46,7 @@ class LedgerListBuilder extends EntityListBuilder {
       $entity_type,
       $container->get('entity_type.manager')->getStorage($entity_type->id()),
       $container->get('current_route_match'),
+      $container->get('commerce_price.currency_formatter'),
     );
   }
 
@@ -53,6 +56,10 @@ class LedgerListBuilder extends EntityListBuilder {
   public function buildHeader() {
     $header['id'] = $this->t('Ledger ID');
     $header['name'] = $this->t('Name');
+    $header['amount'] = $this->t('Amount');
+    $header['amount_type'] = $this->t('Amount type');
+    $header['balance'] = $this->t('Balance');
+    $header['created'] = $this->t('Created');
     return $header + parent::buildHeader();
   }
 
@@ -70,6 +77,15 @@ class LedgerListBuilder extends EntityListBuilder {
         'account' => $entity->getAccountId(),
       ]
     );
+    $amount = $entity->getAmount();
+    $formatted_amount = $this->currencyFormatter->format($amount->getNumber(), $amount->getCurrencyCode());
+    $row['amount'] = $formatted_amount;
+    $row['amount_type'] = $entity->get('amount_type')->value == 'debit' ? $this->t('Debit') : $this->t('Credit');
+
+    $balance = $entity->getBalance();
+    $formatted_balance = $this->currencyFormatter->format($balance->getNumber(), $balance->getCurrencyCode());
+    $row['balance'] = $formatted_balance;
+    $row['created']['data'] = $entity->get('created')->view(['label' => 'hidden']);
     return $row + parent::buildRow($entity);
   }
 

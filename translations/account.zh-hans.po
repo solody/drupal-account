@@ -38,6 +38,8 @@ msgid "Transfer methods"
 msgstr "转账方式"
 msgid "Account type"
 msgstr "账户类型"
+msgid "Amount type"
+msgstr "记账类型"
 
 msgid "Add withdraw"
 msgstr "添加提现"
