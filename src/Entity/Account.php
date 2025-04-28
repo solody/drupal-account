@@ -237,7 +237,7 @@ class Account extends ContentEntityBase implements AccountInterface {
       ->setRequired(TRUE)
       ->setDefaultValue('')
       ->setDisplayOptions('view', [
-        'label' => 'inline',
+        'label' => 'hidden',
         'type' => 'string',
         'weight' => 0,
       ])

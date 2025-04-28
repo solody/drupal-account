@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\account\FinanceManagerInterface;
 
 /**
- * Class ManualAddAccountLedgerForm.
+ * Form to manually adjust balance to an account.
  */
 class ManualAddAccountLedgerForm extends FormBase {
 
@@ -53,13 +53,13 @@ class ManualAddAccountLedgerForm extends FormBase {
     $form['amount'] = [
       '#type' => 'commerce_price',
       '#title' => $this->t('Amount'),
-      '#description' => $this->t('Amount to add.'),
+      '#description' => $this->t('Amount to adjust.'),
       '#weight' => '0',
     ];
     $form['amount_type'] = [
       '#type' => 'radios',
       '#title' => $this->t('Amount Type'),
-      '#options' => ['credit' => $this->t('credit'), 'debit' => $this->t('debit')],
+      '#options' => ['credit' => $this->t('Credit'), 'debit' => $this->t('Debit')],
       '#default_value' => 'debit',
       '#weight' => '0',
     ];
