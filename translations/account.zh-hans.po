@@ -48,6 +48,8 @@ msgstr "添加账户"
 
 msgid "Finance Account"
 msgstr "财务账户"
+msgid "Finance accounts"
+msgstr "财务账户"
 msgid "Amount to adjust."
 msgstr "要调整的金额。"
 msgid "Amount Type"

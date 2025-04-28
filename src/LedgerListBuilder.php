@@ -60,7 +60,7 @@ class LedgerListBuilder extends EntityListBuilder {
     $header['amount_type'] = $this->t('Amount type');
     $header['balance'] = $this->t('Balance');
     $header['created'] = $this->t('Created');
-    return $header + parent::buildHeader();
+    return $header;
   }
 
   /**
@@ -86,7 +86,7 @@ class LedgerListBuilder extends EntityListBuilder {
     $formatted_balance = $this->currencyFormatter->format($balance->getNumber(), $balance->getCurrencyCode());
     $row['balance'] = $formatted_balance;
     $row['created']['data'] = $entity->get('created')->view(['label' => 'hidden']);
-    return $row + parent::buildRow($entity);
+    return $row;
   }
 
   /**
