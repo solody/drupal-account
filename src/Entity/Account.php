@@ -50,7 +50,6 @@ use Drupal\user\UserInterface;
  *     "label" = "name",
  *     "uuid" = "uuid",
  *     "owner" = "uid",
- *     "langcode" = "langcode",
  *   },
  *   links = {
  *     "canonical" = "/admin/finance/account/{account}",

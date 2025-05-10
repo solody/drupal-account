@@ -39,7 +39,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "id" = "withdraw_id",
  *     "label" = "name",
  *     "uuid" = "uuid",
- *     "langcode" = "langcode",
  *   },
  *   links = {
  *     "canonical" = "/admin/finance/withdraw/{withdraw}",

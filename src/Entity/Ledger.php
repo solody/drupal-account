@@ -39,7 +39,6 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
  *     "id" = "ledger_id",
  *     "label" = "remarks",
  *     "uuid" = "uuid",
- *     "langcode" = "langcode",
  *   },
  *   links = {
  *     "canonical" = "/admin/finance/account/{account}/ledgers/{ledger}",
