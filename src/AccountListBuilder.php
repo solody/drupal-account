@@ -31,7 +31,7 @@ class AccountListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),
-      'entity.account.edit_form',
+      'entity.account.canonical',
       ['account' => $entity->id()]
     );
     return $row + parent::buildRow($entity);

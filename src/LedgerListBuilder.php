@@ -71,7 +71,7 @@ class LedgerListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),
-      'entity.ledger.edit_form',
+      'entity.ledger.canonical',
       [
         'ledger' => $entity->id(),
         'account' => $entity->getAccountId(),
