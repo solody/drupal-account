@@ -6,6 +6,13 @@ administer account_transfer_gateway:
   description: 'Maintain the instances of transfer gateway plugin.'
   restrict access: true
 
+
+administer account types:
+  title: 'Administer account types'
+  description: 'Maintain the types of account entity.'
+  restrict access: true
+
+
 add account entities:
   title: 'Create new Account entities'
 

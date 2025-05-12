@@ -23,7 +23,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     },
  *   },
  *   config_prefix = "account_type",
- *   admin_permission = "administer site configuration",
+ *   admin_permission = "administer account types",
  *   bundle_of = "account",
  *   entity_keys = {
  *     "id" = "id",
