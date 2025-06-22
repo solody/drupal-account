@@ -31,7 +31,7 @@ class WithdrawListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),
-      'entity.withdraw.edit_form',
+      'entity.withdraw.canonical',
       ['withdraw' => $entity->id()]
     );
     return $row + parent::buildRow($entity);
